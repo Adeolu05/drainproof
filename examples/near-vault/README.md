@@ -10,6 +10,7 @@ The [Drainproof Vault](../../contracts/vault) is a NEAR contract that holds the 
 | `deploy.mjs` | Deploys the vault to **testnet only** |
 | `add-agent-key.mjs` | Gives the agent its function-call key (**testnet only**) |
 | `push-policy.mjs` | Installs a YAML policy in the vault (**testnet only**; dry run by default) |
+| `lock-vault.mjs` | Optional and irreversible: deletes every key of the vault account so the contract can never be redeployed (**testnet only**; dry run by default) |
 | `policy.yaml` | The vault's policy (native NEAR, testnet) |
 
 ## Run it locally (no account, no key, no testnet)
@@ -92,6 +93,35 @@ You need three testnet accounts (see [docs/testnet-run.md](../../docs/testnet-ru
    ```bash
    near contract call-function as-transaction vault.<owner>.testnet withdraw json-args '{"amount":"<yoctoNEAR>"}' prepaid-gas '30.0 Tgas' attached-deposit '1 yoctoNEAR' sign-as <owner>.testnet network-config testnet sign-with-keychain send
    ```
+
+## Optional: lock the vault (irreversible)
+
+After deployment the vault account still holds a full-access key: `deploy.mjs` adds the owner's key to it, so the deployer can redeploy the contract or move the funds without going through it. [lock-vault.mjs](lock-vault.mjs) removes that power. It deletes **every** access key of the vault account in one transaction, signed by the vault account itself, and then checks that no key is left.
+
+**The trade-off.** After locking, nobody can redeploy, upgrade or fix the contract, and nobody can sign as the vault account, ever. The vault keeps working exactly as before: the agent pays through `request_payment`, and the owner still controls it through the contract (`withdraw`, `pause`, `set_policy`, `set_agent`, approvals), signing from the owner account with 1 yoctoNEAR attached. If the owner account loses its full-access key, nobody can withdraw any more. Lock only code you have checked.
+
+The script refuses unless all of the following hold:
+
+- The testnet opt-in is set, the RPC is https and reports `testnet`, and every account is a testnet account (the same checks as the other scripts).
+- The signer is the vault account.
+- The deployed code hash equals the local build of `contracts/vault` (`pnpm build:vault`).
+- The vault's owner is a different account and holds a full-access key, so it can still call `withdraw`.
+- The signing key is a full-access key of the vault account.
+- `--lock` is given and `DRAINPROOF_CONFIRM_LOCK` repeats the vault account. Without them it is a dry run that changes nothing.
+
+It also warns about allowlisted recipients that do not exist on testnet: anyone could create such an account and receive the vault's payments. The owner removes them with `push-policy.mjs`, before or after locking. `deploy.mjs` and `push-policy.mjs` refuse them outright.
+
+From this folder, with the vault account's full-access key in `NEAR_TESTNET_PRIVATE_KEY` (for a vault made by `deploy.mjs`, that is the owner's key):
+
+```bash
+DRAINPROOF_NEAR_EXECUTION=testnet NEAR_TESTNET_ACCOUNT_ID=vault.<owner>.testnet DRAINPROOF_VAULT_ACCOUNT_ID=vault.<owner>.testnet node lock-vault.mjs
+```
+
+```bash
+DRAINPROOF_NEAR_EXECUTION=testnet NEAR_TESTNET_ACCOUNT_ID=vault.<owner>.testnet DRAINPROOF_VAULT_ACCOUNT_ID=vault.<owner>.testnet DRAINPROOF_CONFIRM_LOCK=vault.<owner>.testnet node lock-vault.mjs --lock
+```
+
+Rehearsed on a local NEAR node: [test/lock.sandbox.test.ts](test/lock.sandbox.test.ts) locks a vault, then has the owner withdraw through the contract and the agent pay through it, and checks that nothing can redeploy it (the old key, a new key and a `DeployContract` from the owner's account are all refused). The script itself was also run end to end against a local node behind an HTTPS proxy that reported `testnet`, including each refusal.
 
 ## Verification status
 

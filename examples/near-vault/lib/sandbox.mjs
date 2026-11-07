@@ -119,6 +119,8 @@ export async function startVault({
     agentKey,
     vaultAccount,
     fullAccess,
+    /** The public key of a genesis account's full-access key. */
+    publicKeyOf: (id) => keys.get(id).getPublicKey().toString(),
     call,
     view,
     balance,
