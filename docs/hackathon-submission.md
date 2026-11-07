@@ -94,7 +94,7 @@ NEAR's role: the Drainproof Vault, a NEAR smart contract in Rust, holds the fund
 - [x] 40 unit tests and 30 tests on a local NEAR node; 16 of the 40 built-in scenarios pass against the contract and 24 are skipped with reasons
 - [x] Expired approval requests cannot jam the 50-slot approval queue (review fix, with unit and sandbox tests)
 - [x] CI job defined (`vault` in `.github/workflows/ci.yml`)
-- [x] CI job has run on GitHub ([run](https://github.com/Adeolu05/drainproof/actions/runs/42305448098), 2026-11-06, success)
+- [x] CI job has run on GitHub (on `main`: [run](https://github.com/Adeolu05/drainproof/actions/runs/42311937868); on demo PR #2: [run](https://github.com/Adeolu05/drainproof/actions/runs/42311692824); both 2026-11-06, success)
 - [ ] Deployed and exercised on testnet
 
 ### LLM prompt-injection demo
@@ -123,7 +123,7 @@ See [demo.md](demo.md): a three-minute script with the real output of every comm
 ## Evidence to include
 
 - `pnpm check` output (all tests passing).
-- A CI run link from https://github.com/Adeolu05/drainproof/actions (for example https://github.com/Adeolu05/drainproof/actions/runs/42305448098), and the demo pull request https://github.com/Adeolu05/drainproof/pull/2.
+- A CI run link from https://github.com/Adeolu05/drainproof/actions (for example https://github.com/Adeolu05/drainproof/actions/runs/42311937868 on `main`), and the demo pull request https://github.com/Adeolu05/drainproof/pull/2.
 - JSON and Markdown reports from the demo.
 - Dashboard screenshots (`docs/images/`).
 - A NEAR testnet transaction hash and explorer link, **only** if a run was actually executed and verified against the network.
