@@ -2,3 +2,8 @@ packages:
   - packages/*
   - apps/*
   - examples/*
+
+# near-sandbox 0.3.5 pins tar 7.5.13, which has published advisories (GHSA-23hp-3jrh-7fpw and others,
+# fixed in 7.5.21). near-sandbox only calls tar.x() to unpack the NEAR node it downloads.
+overrides:
+  "near-sandbox>tar": "7.5.22"
