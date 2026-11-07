@@ -1,3 +1,4 @@
+import { existsSync } from "node:fs";
 import { readdir, readFile, stat } from "node:fs/promises";
 import path from "node:path";
 import { loadProject, runReportSchema, type RunReport } from "@drainproof/runner";
@@ -22,7 +23,7 @@ export interface DataSource {
  */
 export function dataSource(): DataSource {
   if (process.env.DRAINPROOF_DEMO === "1") {
-    return { mode: "demo", runsDir: path.join(/*turbopackIgnore: true*/ process.cwd(), "demo-runs"), projectFile: undefined };
+    return { mode: "demo", runsDir: demoRunsDir(), projectFile: undefined };
   }
   return {
     mode: "project",
@@ -30,6 +31,19 @@ export function dataSource(): DataSource {
     runsDir: path.resolve(/*turbopackIgnore: true*/ process.env.DRAINPROOF_RUNS_DIR ?? ".drainproof/runs"),
     projectFile: process.env.DRAINPROOF_PROJECT ? path.resolve(/*turbopackIgnore: true*/ process.env.DRAINPROOF_PROJECT) : undefined,
   };
+}
+
+/**
+ * The bundled demo reports (apps/web/demo-runs). `next start` runs from apps/web, and so do
+ * Vercel functions (their Next.js launcher changes to the app folder, checked with
+ * `vercel build`, CLI 65.2.0). A host that runs from the repository root is accepted too. The
+ * files are included in server builds by `outputFileTracingIncludes` in next.config.mjs.
+ */
+function demoRunsDir(): string {
+  const cwd = /*turbopackIgnore: true*/ process.cwd();
+  const appDir = path.join(cwd, "demo-runs");
+  const repoRoot = path.join(cwd, "apps", "web", "demo-runs");
+  return existsSync(appDir) || !existsSync(repoRoot) ? appDir : repoRoot;
 }
 
 export interface InvalidReport {

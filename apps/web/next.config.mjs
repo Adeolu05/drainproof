@@ -7,6 +7,10 @@ const config = {
   poweredByHeader: false,
   turbopack: { root: monorepoRoot },
   outputFileTracingRoot: monorepoRoot,
+  // Demo mode (DRAINPROOF_DEMO=1) reads demo-runs/ at request time from a runtime path, which
+  // the tracer cannot see. Include the reports in every server route so a serverless deployment
+  // (for example Vercel) ships them.
+  outputFileTracingIncludes: { "/**": ["./demo-runs/*.json"] },
   async headers() {
     return [
       {

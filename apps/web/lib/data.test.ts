@@ -90,4 +90,18 @@ describe("dashboard data layer", () => {
       process.chdir(cwd);
     }
   });
+
+  it("finds the demo reports from the repository root too (serverless working directory)", async () => {
+    process.env.DRAINPROOF_DEMO = "1";
+    const cwd = process.cwd();
+    process.chdir(ROOT);
+    try {
+      const r = await loadRuns();
+      expect(r.source.runsDir).toBe(path.join(ROOT, "apps", "web", "demo-runs"));
+      expect(r.dirMissing).toBe(false);
+      expect(r.runs.length).toBeGreaterThanOrEqual(3);
+    } finally {
+      process.chdir(cwd);
+    }
+  });
 });
