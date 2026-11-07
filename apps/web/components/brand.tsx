@@ -1,30 +1,57 @@
 import Link from "next/link";
-import { useId } from "react";
+import type { CSSProperties } from "react";
 
-/** Drainproof mark: a shield with a check, stroked with the brand gradient. */
-export function LogoMark({ className = "h-7 w-7" }: { className?: string }) {
-  const id = useId();
+/**
+ * Drainproof mark: a drain grate (ring with seven holes), drawn in --mark (#1f9d55 in light
+ * mode, #5fd08a in dark mode). Same geometry as docs/images/drainproof-mark.svg.
+ */
+export function LogoMark({ className = "h-7 w-7", style }: { className?: string; style?: CSSProperties }) {
   return (
-    <svg aria-hidden="true" viewBox="0 0 32 32" className={className}>
-      <defs>
-        <linearGradient id={id} x1="0" y1="0" x2="1" y2="1">
-          <stop offset="0" stopColor="var(--brand-1)" />
-          <stop offset="0.5" stopColor="var(--brand-2)" />
-          <stop offset="1" stopColor="var(--brand-3)" />
-        </linearGradient>
-      </defs>
-      <rect width="32" height="32" rx="8" className="fill-surface-2" />
-      <path d="M16 5.5l8.5 3.2v6.1c0 5.4-3.6 9.9-8.5 11.7-4.9-1.8-8.5-6.3-8.5-11.7V8.7z" fill="none" stroke={`url(#${id})`} strokeWidth="2.4" strokeLinejoin="round" />
-      <path d="M12.4 16.2l2.6 2.6 4.8-5.2" fill="none" stroke={`url(#${id})`} strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" />
+    <svg aria-hidden="true" focusable="false" viewBox="0 0 64 64" className={className} style={style}>
+      <circle cx="32" cy="32" r="25" fill="none" stroke="var(--mark)" strokeWidth="6" />
+      <g fill="var(--mark)">
+        <circle cx="32" cy="32" r="4.2" />
+        <circle cx="32" cy="20.5" r="4.2" />
+        <circle cx="32" cy="43.5" r="4.2" />
+        <circle cx="22" cy="26.25" r="4.2" />
+        <circle cx="42" cy="26.25" r="4.2" />
+        <circle cx="22" cy="37.75" r="4.2" />
+        <circle cx="42" cy="37.75" r="4.2" />
+      </g>
     </svg>
+  );
+}
+
+// The ring's outer diameter is 56 of the 64-unit box (radius 25 plus half of the 6-unit stroke).
+// Sizing the box to 64/56 of the font's x-height (1ex) makes the ring exactly x-height tall;
+// shifting it down by half the padding puts the ring on the baseline, like the letter it replaces.
+const MARK_BOX_EX = 64 / 56;
+const MARK_SHIFT_EX = (MARK_BOX_EX - 1) / 2;
+
+/**
+ * The "drainproof" wordmark: lowercase, in the display font, with the mark in place of an "o"
+ * (drainpr + mark + of). Screen readers get the single word "Drainproof".
+ */
+export function WordmarkText({ className = "" }: { className?: string }) {
+  return (
+    <span className={`inline-flex items-baseline font-display font-bold tracking-tight ${className}`}>
+      <span className="sr-only">Drainproof</span>
+      <span aria-hidden="true" className="whitespace-nowrap">
+        drainpr
+        <LogoMark
+          className="inline-block"
+          style={{ width: `${MARK_BOX_EX}ex`, height: `${MARK_BOX_EX}ex`, verticalAlign: `-${MARK_SHIFT_EX}ex`, margin: "0 0.02em" }}
+        />
+        of
+      </span>
+    </span>
   );
 }
 
 export function Wordmark({ href = "/" }: { href?: string }) {
   return (
-    <Link href={href} className="flex min-h-11 items-center gap-2.5 font-display text-[1.05rem] font-semibold tracking-tight sm:min-h-9">
-      <LogoMark />
-      Drainproof
+    <Link href={href} className="flex min-h-11 items-center text-[1.35rem] sm:min-h-9">
+      <WordmarkText />
     </Link>
   );
 }

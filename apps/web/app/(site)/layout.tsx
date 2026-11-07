@@ -1,6 +1,6 @@
 import Link from "next/link";
 import type { ReactNode } from "react";
-import { LogoMark, Wordmark } from "@/components/brand";
+import { Wordmark, WordmarkText } from "@/components/brand";
 import { GITHUB, docUrl } from "@/components/site";
 
 const LINKS = [
@@ -49,8 +49,8 @@ export default function SiteLayout({ children }: { children: ReactNode }) {
       <footer className="border-t border-border">
         <div className="mx-auto grid max-w-6xl gap-8 px-4 py-12 sm:grid-cols-[1.4fr_1fr_1fr]">
           <div>
-            <div className="flex items-center gap-2.5 font-display font-semibold">
-              <LogoMark className="h-6 w-6" /> Drainproof
+            <div className="text-lg">
+              <WordmarkText />
             </div>
             <p className="mt-3 max-w-sm text-sm text-muted">
               Passing the suite shows the tested properties hold under the tested conditions. It is not proof that an agent is secure in general.{" "}

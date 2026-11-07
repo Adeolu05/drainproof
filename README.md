@@ -1,4 +1,4 @@
-# Drainproof
+<h1>drainpr<picture><source media="(prefers-color-scheme: dark)" srcset="docs/images/drainproof-mark.svg"><img src="docs/images/drainproof-mark-light.svg" alt="o" height="20"></picture>of</h1>
 
 **Is your AI agent drainproof?**
 
