@@ -80,7 +80,7 @@ It **cannot**:
 | Compromised key | Effect | Mitigation |
 | --- | --- | --- |
 | Owner's full-access key | Full control: change the policy, approve, withdraw everything | Out of scope for the contract. Use a hardware wallet. A multisig owner is a possible extension. |
-| Vault account's full-access key | Can deploy different code or move all funds, bypassing the contract | Keep it with the owner, or delete it after deployment to lock the account (then no redeploys or cleanup are possible). For testnet the deploy script keeps it and says so. |
+| Vault account's full-access key | Can deploy different code or move all funds, bypassing the contract | Keep it with the owner, or lock the account after deployment with [`lock-vault.mjs`](../examples/near-vault/README.md#optional-lock-the-vault-irreversible), which deletes every key of the vault account after checking the deployed code against the local build and that the owner can still call `withdraw`. After locking, no redeploy, upgrade or fix is possible; the owner still withdraws, pauses and changes the policy through the contract. The deploy script keeps the key and says so. |
 | Agent account's full-access key | Can spend the agent account's balance and add keys. In the vault it is still limited to `request_payment`. | Keep it offline. It is only needed for recovery. |
 
 ### Contract-level risks considered
@@ -355,8 +355,9 @@ Decided during review, after implementation: expired pending requests are delete
 
 - Native NEAR only; no fungible tokens (NEP-141).
 - One agent per vault, one owner key, no multisig.
-- No upgrade or migration method. Redeploying needs the vault account's full-access key.
-- Submitted, paid, failed and rejected request records are kept permanently, so storage stake grows with the number of payments (bounded per day by `max_daily_count`; 112 to 362 bytes each, measured).
+- No upgrade or migration method. Redeploying needs the vault account's full-access key, and is impossible after `lock-vault.mjs`.
+- Submitted, paid, failed and rejected request records are kept permanently, so storage stake grows with the number of payments (112 to 362 bytes each, measured). Paid and submitted records are bounded per day by `max_daily_count`. **Failed transfers are not** (found in the Phase 6 security review, 2026-11-07): when a transfer fails, `on_transfer_settled` gives back both the spent amount and the count, but the `Failed` record stays. A transfer fails when the recipient account does not exist, so if an allowlisted recipient does not exist, a compromised agent can store one record per call, paid from the vault's balance, until its key allowance runs out (roughly 565 calls with the default 0.25 NEAR). Mitigation in the scripts: `deploy.mjs` and `push-policy.mjs` refuse recipients that do not exist on-chain, and `lock-vault.mjs` warns about them. A contract fix would give back the amount but not the count, or delete `Failed` records.
+- Changing `daily_window_utc_offset_minutes` with `set_policy` moves the current window index, which resets the daily counters (found in the same review). Only the owner can do it, but a reviewed policy change that only moves the offset can give the agent up to about three days' budget within a few hours. A contract fix would carry the usage over to the new window, or refuse an offset change while today's usage is above zero.
 - Requests that have not expired can fill the 50 pending slots for up to one approval period.
 - Day boundaries follow block timestamps, not wall-clock time.
 - A compromised agent can still pay allowlisted recipients up to the limits. The vault bounds the loss; it does not prevent it.

@@ -150,7 +150,7 @@ pnpm -s drainproof test --config examples/recipient-checks/drainproof.yaml --no-
 pnpm -s test 2>&1 | grep -E "Test Files|Tests "
 ```
 
-Expected: the naive guard (which uses `parseFloat` and case-insensitive recipient matching) reports `Passed:    7`, `Failed:    16`, `Skipped:   17` and `exit code: 1`. The [recipient-check pack](examples/recipient-checks) (look-alike and non-allowlisted accounts) reports `Passed:    8`, `Failed:    0` and `Result: PASSED  (exit code 0)`. The full suite reports `Test Files  17 passed (17)` and `Tests  293 passed (293)`.
+Expected: the naive guard (which uses `parseFloat` and case-insensitive recipient matching) reports `Passed:    7`, `Failed:    16`, `Skipped:   17` and `exit code: 1`. The [recipient-check pack](examples/recipient-checks) (look-alike and non-allowlisted accounts) reports `Passed:    8`, `Failed:    0` and `Result: PASSED  (exit code 0)`. The full suite reports `Test Files  18 passed (18)` and `Tests  297 passed (297)`.
 
 ## Overview
 
@@ -365,6 +365,10 @@ The vault account still holds one full-access key, `ed25519:HVdWN3wzskMhmSPWBbe5
 
 Not exercised on testnet: approvals, `pause`, `withdraw`, `set_agent`, and the protocol's refusals of the agent's key (another method, a direct transfer). Those are checked only against the local NEAR node.
 
+**Open issue on the live vault (found 2026-11-07):** two of the three allowlisted recipients, `merchant-example.testnet` and `data-provider-example.testnet`, are the placeholders from the example policy and do not exist on testnet (`view_account` returns `UNKNOWN_ACCOUNT`). Anyone could create them and then receive payments the agent makes to them, within the limits, and transfers to them fail in a way that grows the vault's storage (see [vault-design.md](docs/vault-design.md#known-limitations)). The owner can remove them with `push-policy.mjs`. `deploy.mjs` and `push-policy.mjs` now refuse recipients that do not exist.
+
+The vault account's full-access key can be removed with the optional, irreversible [lock step](examples/near-vault/README.md#optional-lock-the-vault-irreversible). The live vault has not been locked.
+
 ## What the agent's key can and cannot do
 
 With the [Drainproof Vault](examples/near-vault), the money sits in a NEAR contract, not in the agent's account. The agent gets a **function-call key**: a NEAR access key that is only valid for calling one method, `request_payment`, on the vault.
@@ -437,7 +441,7 @@ By default it replays recorded model responses, offline and without a key. **The
 
 Verified on 2026-11-06 (Node 24.10.0, pnpm 10.28.0, Linux), unless a line gives another date:
 
-- `pnpm check` runs lint, build, the dashboard build, typecheck and 293 automated tests, and all of it passes.
+- `pnpm check` runs lint, build, the dashboard build, typecheck and 297 automated tests, and all of it passes.
 - On 2026-11-05, from a fresh clone with an empty package cache (cold install from npm, frozen lockfile), the quick-start, the unsafe-policy demo (exit code 1) and an independent cross-check of the reports all passed. Every PASS scenario ran all its steps, every FAIL has a finding, and errors are never counted as passes.
 - On 2026-11-05, Drainproof was installed from local tarballs into an unrelated npm project, and its generated GitHub workflow steps were executed there ([docs/adoption.md](docs/adoption.md)).
 - The CLI quick-start works, an intentional policy violation exits with code 1, and the example suites pass.
@@ -447,6 +451,7 @@ Verified on 2026-11-06 (Node 24.10.0, pnpm 10.28.0, Linux), unless a line gives 
 - GitHub Actions (2026-11-06, UTC): on `main` at `e08f8a5`, all six [CI jobs](https://github.com/Adeolu05/drainproof/actions/runs/42311937868) passed and the [Drainproof workflow](https://github.com/Adeolu05/drainproof/actions/runs/42311937709) passed. On [demo PR #2](https://github.com/Adeolu05/drainproof/pull/2) at `0556a0f`, all six [CI jobs](https://github.com/Adeolu05/drainproof/actions/runs/42311692824) passed, including the `vault` job (contract tests, 30 sandbox tests and both scenario suites on a local NEAR node on the GitHub runner) and the `action` job (the action passed a safe policy and the NEAR suite, and failed the unsafe policy with exit code 1 and the CRITICAL finding), and the [Drainproof workflow](https://github.com/Adeolu05/drainproof/actions/runs/42311692816) failed the pull request with exit code 1, as intended.
 - NEAR testnet, 2026-11-07: one 0.01 NEAR transfer by the testnet executor (`J8MThEg4…`), final and successful, with signer, receiver and exact amount confirmed by three public RPCs ([Live testnet run](#live-testnet-run)). It was run by the project owner; the RPC check was repeated independently.
 - Drainproof Vault on testnet, 2026-11-07: `vault.dpeluola-owner.testnet` runs code byte-identical to a build of `contracts/vault`, with the repository's vault policy plus the owner's shop account. With the agent's function-call key, a 0.01 NEAR payment to an allowlisted account was paid and a payment to `attacker.testnet` was blocked with `RECIPIENT_NOT_ALLOWED`, all confirmed by two public RPCs ([Drainproof Vault on testnet](#drainproof-vault-on-testnet)).
+- Phase 6 audit, 2026-11-07. `pnpm audit`: 7 advisories, all in development-only dependencies. The six in `tar` (pulled in by `near-sandbox`, which pins 7.5.13) are fixed by a pnpm override to 7.5.22; one moderate `minimatch` advisory under `eslint` remains, because the fix needs minimatch 11 and eslint 10.14.0 (the latest) requires 10, and it needs attacker-controlled glob patterns. `cargo audit` (0.22.2, RustSec database of 2026-11-07): one vulnerability, `crypto-bigint` 0.5.5 (RUSTSEC-2026-0387), and two "unmaintained" warnings, `unsafe-libyaml` and `wee_alloc`. `crypto-bigint` and `unsafe-libyaml` come only from near-sdk's `unit-testing` feature (dev-dependencies) and are not in the contract wasm; `wee_alloc` is near-sdk 5.30.0's wasm allocator. gitleaks 8.30.1 over every branch and pull-request ref (73 commits): two findings, both the same test-only HMAC key in `packages/core/test/fixtures.ts` (named `test-approval-secret`), so no real secret. An independent security review of the new code found nothing critical or high; the low findings that are fixed and the two contract findings that are documented are listed in [vault-design.md](docs/vault-design.md#known-limitations) and the threat model.
 - An independent adversarial review of the engine, runner and NEAR executor found 7 defects plus 2 fail-open edge cases. All are fixed, each with a regression test that reproduces the original attack (`packages/*/test/regressions.test.ts` and the NEAR tests).
 
 Not yet verified:
