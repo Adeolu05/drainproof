@@ -150,7 +150,7 @@ pnpm -s drainproof test --config examples/recipient-checks/drainproof.yaml --no-
 pnpm -s test 2>&1 | grep -E "Test Files|Tests "
 ```
 
-Expected: the naive guard (which uses `parseFloat` and case-insensitive recipient matching) reports `Passed:    7`, `Failed:    16`, `Skipped:   17` and `exit code: 1`. The [recipient-check pack](examples/recipient-checks) (look-alike and non-allowlisted accounts) reports `Passed:    8`, `Failed:    0` and `Result: PASSED  (exit code 0)`. The full suite reports `Test Files  17 passed (17)` and `Tests  292 passed (292)`.
+Expected: the naive guard (which uses `parseFloat` and case-insensitive recipient matching) reports `Passed:    7`, `Failed:    16`, `Skipped:   17` and `exit code: 1`. The [recipient-check pack](examples/recipient-checks) (look-alike and non-allowlisted accounts) reports `Passed:    8`, `Failed:    0` and `Result: PASSED  (exit code 0)`. The full suite reports `Test Files  17 passed (17)` and `Tests  293 passed (293)`.
 
 ## Overview
 
@@ -306,6 +306,16 @@ DRAINPROOF_PROJECT=/tmp/my-agent/drainproof.yaml \
 
 The web app has two parts: a project landing page at `/` and the dashboard at `/dashboard`. The dashboard is read-only. Every report is validated against the same schema the CLI writes; unreadable files are listed as such, never shown as results. The demo fixtures are produced by [a script](apps/web/scripts/generate-demo-runs.sh) that runs the real CLI.
 
+### Deploy the dashboard to Vercel (demo mode)
+
+Import this repository as a new Vercel project and set:
+
+- **Root Directory:** `apps/web`. Its [vercel.json](apps/web/vercel.json) installs the web app and its workspace packages from the frozen lockfile and builds `@drainproof/core` and `@drainproof/runner` before `next build`.
+- **Environment variables:** `DRAINPROOF_DEMO=1` (serve the bundled demo reports, labelled as demo data in the UI) and `ENABLE_EXPERIMENTAL_COREPACK=1` (so Vercel uses the pnpm version pinned in `package.json`, 10.28.0).
+- **Node.js version:** any version Vercel offers (22.x, 24.x or 26.x).
+
+Without `DRAINPROOF_DEMO=1` the dashboard shows an empty state, because a deployment has no CLI runs of its own. The demo reports are bundled into every server function through `outputFileTracingIncludes` in [next.config.mjs](apps/web/next.config.mjs). This setup was rehearsed locally with `vercel build` (Vercel CLI 65.2.0): it installed with pnpm 10.28.0 through Corepack, built, and produced Node.js 24 functions that contain the 5 demo reports. It has not been deployed from this repository yet.
+
 ## NEAR integration
 
 - `@drainproof/near` validates NEAR account IDs, including cross-network mistakes such as a `*.near` recipient on testnet, and handles 24-decimal yoctoNEAR amounts exactly. The [NEAR example suite](examples/near-testnet) passes offline.
@@ -401,10 +411,11 @@ By default it replays recorded model responses, offline and without a key. **The
 
 Verified on 2026-11-06 (Node 24.10.0, pnpm 10.28.0, Linux), unless a line gives another date:
 
-- `pnpm check` runs lint, build, the dashboard build, typecheck and 292 automated tests, and all of it passes.
+- `pnpm check` runs lint, build, the dashboard build, typecheck and 293 automated tests, and all of it passes.
 - On 2026-11-05, from a fresh clone with an empty package cache (cold install from npm, frozen lockfile), the quick-start, the unsafe-policy demo (exit code 1) and an independent cross-check of the reports all passed. Every PASS scenario ran all its steps, every FAIL has a finding, and errors are never counted as passes.
 - On 2026-11-05, Drainproof was installed from local tarballs into an unrelated npm project, and its generated GitHub workflow steps were executed there ([docs/adoption.md](docs/adoption.md)).
 - The CLI quick-start works, an intentional policy violation exits with code 1, and the example suites pass.
+- Node.js versions, 2026-11-07, each from a clean copy with the frozen lockfile and pnpm 10.28.0: on 20.20.2, 22.23.4, 24.22.2 and 26.13.0, lint, build, the dashboard build, typecheck and all 293 tests pass and judge steps 2 and 3 give the documented results; on 20.20.2 and 22.23.4, judge steps 5 and 6, the vault sandbox tests (30), the vault and recipient-check scenarios and the vault and LLM demos pass as well. The requirement stays at Node.js 22.22.2 or newer: Node.js 20 reached end of life on 2026-04-30, and `near-api-js` 7.4.0 and `near-sandbox` 0.3.5 declare `node >=22.22.2` (vitest 5.1.0 declares `^22.12.0 || ^24.0.0 || >=26.0.0`), so passing on Node.js 20 today is not support.
 - `pnpm bench` (after `pnpm build`): over four runs on an Intel Core i7-1185G7, `authorize()` took a mean of 22.0 to 27.2 µs (p99 61 to 74 µs), against a target of under 10 ms. The 40-scenario suite took 14 to 22 ms in the runner, or 212 to 286 ms wall time including Node startup. Timings depend on the machine and its load.
 - Drainproof Vault, on a local NEAR node: `cargo test` passes 40 unit tests, `cargo clippy --all-targets -- -D warnings` and `cargo fmt --check` are clean, `pnpm test:vault` passes 30 integration tests, and 16 of the 40 built-in scenarios pass against the contract (24 skipped, each with its reason). The [recipient-check pack](examples/recipient-checks) passes 7 of 8 against the contract (1 skipped: Unicode look-alikes are not valid NEAR account IDs). See [Verify the vault yourself](#verify-the-vault-yourself-optional).
 - GitHub Actions (2026-11-06, UTC): on `main` at `e08f8a5`, all six [CI jobs](https://github.com/Adeolu05/drainproof/actions/runs/42311937868) passed and the [Drainproof workflow](https://github.com/Adeolu05/drainproof/actions/runs/42311937709) passed. On [demo PR #2](https://github.com/Adeolu05/drainproof/pull/2) at `0556a0f`, all six [CI jobs](https://github.com/Adeolu05/drainproof/actions/runs/42311692824) passed, including the `vault` job (contract tests, 30 sandbox tests and both scenario suites on a local NEAR node on the GitHub runner) and the `action` job (the action passed a safe policy and the NEAR suite, and failed the unsafe policy with exit code 1 and the CRITICAL finding), and the [Drainproof workflow](https://github.com/Adeolu05/drainproof/actions/runs/42311692816) failed the pull request with exit code 1, as intended.
