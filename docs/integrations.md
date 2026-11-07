@@ -70,7 +70,7 @@ The executor above signs native transfers, which needs a full-access key. The [D
 
 - `vaultPolicyFromPolicy(policy)` in `@drainproof/near` converts a YAML policy into the vault's on-chain policy, or lists why it cannot (one asset `NEAR` with 24 decimals, `near-testnet` only, valid account IDs).
 - `checkTestnetAccountId` and `checkDirectSubAccount` guard the testnet scripts in [`examples/near-vault`](../examples/near-vault) (`deploy.mjs`, `add-agent-key.mjs`, `push-policy.mjs`), which refuse to sign unless the RPC reports `testnet`.
-- **Tested on a local NEAR node only** (nearcore 2.14.0 through the official `near-sandbox` package): 40 contract unit tests, 30 sandbox integration tests, and 16 of the 40 built-in scenarios run against the contract (24 skipped, each with its reason). The vault has **not** been deployed to testnet, and no vault transaction is claimed. Run it with the commands in [examples/near-vault/README.md](../examples/near-vault/README.md).
+- **Tested on a local NEAR node** (nearcore 2.14.0 through the official `near-sandbox` package): 40 contract unit tests, 30 sandbox integration tests, and 16 of the 40 built-in scenarios run against the contract (24 skipped, each with its reason). **Deployed to testnet** on 2026-11-07 as `vault.dpeluola-owner.testnet` (code byte-identical to a build of this repository), where the agent's function-call key made one allowed and one blocked payment, confirmed by two public RPCs; see the README's [Drainproof Vault on testnet](../README.md#drainproof-vault-on-testnet). Approvals, `pause`, `withdraw` and the agent-key refusals were exercised only on the local node. Run it with the commands in [examples/near-vault/README.md](../examples/near-vault/README.md).
 
 ### What is not done
 

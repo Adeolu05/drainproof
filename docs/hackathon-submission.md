@@ -95,7 +95,7 @@ NEAR's role: the Drainproof Vault, a NEAR smart contract in Rust, holds the fund
 - [x] Expired approval requests cannot jam the 50-slot approval queue (review fix, with unit and sandbox tests)
 - [x] CI job defined (`vault` in `.github/workflows/ci.yml`)
 - [x] CI job has run on GitHub (on `main`: [run](https://github.com/Adeolu05/drainproof/actions/runs/42311937868); on demo PR #2: [run](https://github.com/Adeolu05/drainproof/actions/runs/42311692824); both 2026-11-06, success)
-- [ ] Deployed and exercised on testnet
+- [x] Deployed and exercised on testnet: `vault.dpeluola-owner.testnet` (2026-11-07), code byte-identical to a build of this repository; an allowed and a blocked payment signed with the agent's function-call key, confirmed by two public RPCs (README, [Drainproof Vault on testnet](../README.md#drainproof-vault-on-testnet))
 
 ### LLM prompt-injection demo
 - [x] Agent loop with a poisoned page, every proposal through `authorize()` (`examples/llm-agent`), 12 offline tests
@@ -126,4 +126,4 @@ See [demo.md](demo.md): a three-minute script with the real output of every comm
 - A CI run link from https://github.com/Adeolu05/drainproof/actions (for example https://github.com/Adeolu05/drainproof/actions/runs/42311937868 on `main`), and the demo pull request https://github.com/Adeolu05/drainproof/pull/2.
 - JSON and Markdown reports from the demo.
 - Dashboard screenshots (`docs/images/`).
-- The NEAR testnet transaction `J8MThEg4yZetZXYZWNE7n12ZtdQcKNN58pKd8YvcoggN` and its explorer link https://testnet.nearblocks.io/txns/J8MThEg4yZetZXYZWNE7n12ZtdQcKNN58pKd8YvcoggN (verified against three public RPCs on 2026-11-07).
+- The NEAR testnet transaction `J8MThEg4yZetZXYZWNE7n12ZtdQcKNN58pKd8YvcoggN` and its explorer link https://testnet.nearblocks.io/txns/J8MThEg4yZetZXYZWNE7n12ZtdQcKNN58pKd8YvcoggN (verified against three public RPCs on 2026-11-07), and the vault's testnet transactions: allowed payment https://testnet.nearblocks.io/txns/B5BWEchnQkydon7KL1mhPyvrXwCgEPdLa9gGEE379ZES and blocked payment https://testnet.nearblocks.io/txns/8uKx8H4tML4yhY33qV3xRDWB2ZUwErHsVxKPug1EPCwK (verified against two public RPCs).

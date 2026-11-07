@@ -229,3 +229,17 @@ The project owner ran this procedure once, with the `examples/near-testnet` demo
 Reported by the owner from the demo output, which the RPC cannot show: the over-limit payment and the mainnet-account payment were blocked before the execution boundary, and the in-policy payment printed `Final status: CONFIRMED` and `Re-read from the RPC by hash: CONFIRMED (matches)`.
 
 The NearBlocks page returned HTTP 403 to an automated request, so the explorer page itself was not checked; the RPC data above is the evidence.
+
+## Vault on testnet (2026-11-07)
+
+The project owner also deployed the [vault](../examples/near-vault) with its testnet scripts and ran its demo. Read back from FASTNEAR and dRPC (identical results):
+
+| Step | Transaction | Result |
+| --- | --- | --- |
+| Create and fund `vault.dpeluola-owner.testnet` (3 NEAR) | [DDof6K7TeZAyd2CL5fsBp9jsz8u1oDh3D9gzX1Bye6s1](https://testnet.nearblocks.io/txns/DDof6K7TeZAyd2CL5fsBp9jsz8u1oDh3D9gzX1Bye6s1) | Success |
+| Deploy and initialise (owner `dpeluola-owner.testnet`, agent `dpeluola-agent.testnet`) | [EGZEFofJK8qETsN8S9JzKnhC1KFPa1hppvAs5q5b7wnJ](https://testnet.nearblocks.io/txns/EGZEFofJK8qETsN8S9JzKnhC1KFPa1hppvAs5q5b7wnJ) | Success; code byte-identical to `pnpm build:vault` from this repository |
+| Add the agent's function-call key `ed25519:BTT53tWQT3YxdHGQcAYVPratEgQasetsX682yTaHvt23` (receiver the vault, `["request_payment"]`, 0.25 NEAR allowance) | [Haus1eBMhEXPpE4XZ9SZxaKsdaS3LpTem9oRxxKwh1Yb](https://testnet.nearblocks.io/txns/Haus1eBMhEXPpE4XZ9SZxaKsdaS3LpTem9oRxxKwh1Yb) | Success; `view_access_key` confirms the permission |
+| Allowed payment, 0.01 NEAR to `dpeluola-shop.testnet`, signed with that key | [B5BWEchnQkydon7KL1mhPyvrXwCgEPdLa9gGEE379ZES](https://testnet.nearblocks.io/txns/B5BWEchnQkydon7KL1mhPyvrXwCgEPdLa9gGEE379ZES) | `ALLOW`, `payment_settled` `PAID`, transfer receipt succeeded |
+| Blocked payment, 0.01 NEAR to `attacker.testnet` with the injection memo, signed with that key | [8uKx8H4tML4yhY33qV3xRDWB2ZUwErHsVxKPug1EPCwK](https://testnet.nearblocks.io/txns/8uKx8H4tML4yhY33qV3xRDWB2ZUwErHsVxKPug1EPCwK) | `BLOCK` (`RECIPIENT_NOT_ALLOWED`), no transfer, nothing stored |
+
+The on-chain policy is `examples/near-vault/policy.yaml` with `- dpeluola-shop.testnet` added under `recipients.allowed`; its hash, `sha256:b6691715afb1c43b848a771b0e740dee94d0b3131face1455f6da5ea2d514771`, was recomputed from that file and matches. Details: the README's [Drainproof Vault on testnet](../README.md#drainproof-vault-on-testnet).

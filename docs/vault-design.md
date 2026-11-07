@@ -1,6 +1,6 @@
 # Drainproof Vault: design
 
-Status: **implemented and tested on a local NEAR node; not deployed to testnet.** The design below was reviewed and approved before the contract was written, and this document now describes what was built: the contract in [`contracts/vault`](../contracts/vault), the sandbox tests, scenario target, demo and testnet scripts in [`examples/near-vault`](../examples/near-vault). Every number below was measured on a local sandbox (nearcore 2.14.0) on 2026-11-06 unless it says otherwise. Where the implementation differs from the original proposal, the section says so.
+Status: **implemented and tested on a local NEAR node, and deployed to testnet** as `vault.dpeluola-owner.testnet` on 2026-11-07 (code byte-identical to a build of this repository; one allowed and one blocked payment made with the agent's function-call key, see the README's [Drainproof Vault on testnet](../README.md#drainproof-vault-on-testnet)). The design below was reviewed and approved before the contract was written, and this document now describes what was built: the contract in [`contracts/vault`](../contracts/vault), the sandbox tests, scenario target, demo and testnet scripts in [`examples/near-vault`](../examples/near-vault). Every number below was measured on a local sandbox (nearcore 2.14.0) on 2026-11-06 unless it says otherwise. Where the implementation differs from the original proposal, the section says so.
 
 ## Why
 
