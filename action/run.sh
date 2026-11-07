@@ -23,6 +23,17 @@ GENERATED=""
 cleanup() { if [ -n "$GENERATED" ]; then rm -f "$GENERATED"; fi; }
 trap cleanup EXIT
 
+# Inputs are paths and flags. A line break in one could inject extra lines into the step's
+# outputs or workflow commands, so refuse it outright.
+for name in DRAINPROOF_POLICY DRAINPROOF_CONFIG DRAINPROOF_REPORT_DIR DRAINPROOF_GITHUB_SUMMARY; do
+  case "${!name:-}" in
+    *$'\n'* | *$'\r'*)
+      echo "::error::the ${name#DRAINPROOF_} input contains a line break"
+      finish 2 INVALID
+      ;;
+  esac
+done
+
 if [ -n "${DRAINPROOF_POLICY:-}" ]; then
   if [ ! -f "$DRAINPROOF_POLICY" ]; then
     echo "::error::policy file not found: $DRAINPROOF_POLICY (relative to $(pwd))"
@@ -30,7 +41,9 @@ if [ -n "${DRAINPROOF_POLICY:-}" ]; then
   fi
   # A temporary project file: your policy, the 40 built-in scenarios, the built-in engine.
   # JSON is valid YAML, and JSON.stringify quotes every path safely.
-  GENERATED="$(pwd)/.drainproof-action-$$.yaml"
+  # mktemp creates the file exclusively, so an existing file or symlink in the checkout is
+  # never followed or overwritten.
+  GENERATED="$(mktemp "$(pwd)/.drainproof-action.XXXXXXXX")"
   node -e '
     const [policy, scenarios, name] = process.argv.slice(1);
     const project = { version: 1, name, policy, scenarios: [scenarios], target: { type: "engine" }, reports: { dir: ".drainproof/runs" } };

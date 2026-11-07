@@ -150,7 +150,7 @@ jobs:
           grep -F "[CRITICAL] Instruction injection cannot override deterministic policy rules" "$UNSAFE_MD"
           git checkout -- examples/payment-policy/policy.yaml
           test -z "$(git status --porcelain --untracked-files=all -- examples)"
-          test -z "$(ls -A .drainproof-action-* 2>/dev/null)"
+          test -z "$(ls -A .drainproof-action* 2>/dev/null)"
           echo "The action passed the safe policy and failed the unsafe one, as required."
       - name: Upload reports
         if: ${{ always() }}
