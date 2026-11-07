@@ -12,13 +12,20 @@
 //   node add-agent-key.mjs
 //
 // Without DRAINPROOF_AGENT_PUBLIC_KEY, a new key pair is generated in memory and its private
-// key is printed once; it is never written anywhere. The agent runtime then uses only that
+// key is printed once, only to an interactive terminal; it is never written anywhere. The agent runtime then uses only that
 // key, as DRAINPROOF_AGENT_PRIVATE_KEY.
 import { isDeepStrictEqual } from "node:util";
 import { KeyPair, PublicKey, actions } from "near-api-js";
 import { Refusal, connectTestnet, nearToYocto, printOutcome, runScript, send, testnetAccountFromEnv, view } from "./lib/testnet.mjs";
 
 await runScript(async () => {
+  // A generated key's private key is printed once. Refuse to print it anywhere but an
+  // interactive terminal (not into a CI log, a pipe or a file).
+  if (!process.env.DRAINPROOF_AGENT_PUBLIC_KEY && !process.stdout.isTTY) {
+    throw new Refusal(
+      "standard output is not a terminal, so the generated private key would end up in a log or file. Run it in an interactive terminal, or generate the key yourself and set DRAINPROOF_AGENT_PUBLIC_KEY",
+    );
+  }
   const vaultId = testnetAccountFromEnv("DRAINPROOF_VAULT_ACCOUNT_ID");
   const allowance = nearToYocto(process.env.DRAINPROOF_AGENT_ALLOWANCE || "0.25", "DRAINPROOF_AGENT_ALLOWANCE");
   const agent = await connectTestnet();

@@ -21,7 +21,7 @@ import { checkDirectSubAccount } from "@drainproof/near";
 import { actions } from "near-api-js";
 import { loadWasm } from "./lib/wasm.mjs";
 import { loadVaultPolicy } from "./lib/policy.mjs";
-import { Refusal, accountExists, connectTestnet, nearToYocto, printOutcome, runScript, send, testnetAccountFromEnv, view } from "./lib/testnet.mjs";
+import { Refusal, accountExists, connectTestnet, nearToYocto, printOutcome, requireRecipientsExist, runScript, send, testnetAccountFromEnv, view } from "./lib/testnet.mjs";
 
 const TGAS = 10n ** 12n;
 
@@ -60,6 +60,7 @@ await runScript(async () => {
     throw new Refusal(`${vaultId} already exists. Use push-policy.mjs to change the policy of an existing vault`);
   }
   if (!(await accountExists(owner.provider, agentId))) throw new Refusal(`the agent account ${agentId} does not exist`);
+  await requireRecipientsExist(owner.provider, vaultPolicy.allowed_recipients);
 
   const created = await send(owner.account, vaultId, [
     actions.createAccount(),

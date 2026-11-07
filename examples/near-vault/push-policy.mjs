@@ -13,7 +13,7 @@
 import { isDeepStrictEqual } from "node:util";
 import { actions } from "near-api-js";
 import { loadVaultPolicy } from "./lib/policy.mjs";
-import { Refusal, connectTestnet, printOutcome, runScript, send, testnetAccountFromEnv, view } from "./lib/testnet.mjs";
+import { Refusal, connectTestnet, printOutcome, requireRecipientsExist, runScript, send, testnetAccountFromEnv, view } from "./lib/testnet.mjs";
 
 const TGAS = 10n ** 12n;
 
@@ -32,6 +32,7 @@ await runScript(async () => {
   const owner = await connectTestnet();
   const config = await view(owner.provider, vaultId, "get_config");
   if (config.owner_id !== owner.signerId) throw new Refusal(`the vault's owner is ${config.owner_id}, not ${owner.signerId}`);
+  await requireRecipientsExist(owner.provider, vaultPolicy.allowed_recipients);
   if (isDeepStrictEqual(await view(owner.provider, vaultId, "get_policy"), vaultPolicy)) {
     console.log("\nThe vault already has exactly this policy. Nothing was sent.");
     return;

@@ -73,6 +73,21 @@ export async function accountExists(provider, accountId) {
 
 export const view = (provider, contractId, method, args = {}) => provider.callFunction({ contractId, method, args });
 
+/**
+ * Refuses unless every allowlisted recipient exists on-chain. A recipient that does not exist
+ * can be created later by anyone, who would then receive the vault's payments; and transfers
+ * to it fail, which leaves failed-request records in the vault's storage.
+ */
+export async function requireRecipientsExist(provider, recipients) {
+  const missing = [];
+  for (const id of recipients) if (!(await accountExists(provider, id))) missing.push(id);
+  if (missing.length > 0) {
+    throw new Refusal(
+      `these allowlisted recipients do not exist on testnet: ${missing.join(", ")}. Anyone could create them and receive the vault's payments. Remove them from recipients.allowed or create them first`,
+    );
+  }
+}
+
 /** Signs and sends one transaction. It is never re-signed or re-sent with a new nonce. */
 export async function send(account, receiverId, actions) {
   const tx = await account.signAndSendTransaction({ receiverId, actions, waitUntil: "FINAL", throwOnFailure: false, retries: 0 });
