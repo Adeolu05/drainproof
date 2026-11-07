@@ -32,7 +32,7 @@ A passing suite means the tested behaviours hold for the scenarios you ran, unde
 
 ## Integrations
 
-- The NEAR executor has not been run against live testnet (see [integrations.md](integrations.md)). Only native NEAR transfers are supported.
+- The NEAR executor has been run against live testnet once (one 0.01 NEAR transfer on 2026-11-07, see [integrations.md](integrations.md)); its failure paths (RPC errors, ambiguous outcomes) are tested only against a local stub. Only native NEAR transfers are supported.
 - No other chain or agent-framework adapters exist yet.
 
 ## Operational

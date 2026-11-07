@@ -86,7 +86,7 @@ NEAR's role: the Drainproof Vault, a NEAR smart contract in Rust, holds the fund
 - [x] No private keys are committed or exposed
 - [x] Blocked proposals make no RPC request; at most one broadcast per reservation (near-api-js retry layers neutralised)
 - [x] Integration limitations documented (`docs/integrations.md`)
-- [ ] Live testnet run recorded and verified against the network (see the README's [Live testnet run](../README.md#live-testnet-run))
+- [x] Live testnet run recorded and verified against the network: a 0.01 NEAR transfer on 2026-11-07 (`J8MThEg4yZetZXYZWNE7n12ZtdQcKNN58pKd8YvcoggN`), confirmed by three public testnet RPCs (see the README's [Live testnet run](../README.md#live-testnet-run))
 
 ### Drainproof Vault (NEAR contract)
 - [x] Contract in Rust (`near-sdk` 5.30.0), built with `cargo-near` 0.22.0; design and threat model in [vault-design.md](vault-design.md)
@@ -126,4 +126,4 @@ See [demo.md](demo.md): a three-minute script with the real output of every comm
 - A CI run link from https://github.com/Adeolu05/drainproof/actions (for example https://github.com/Adeolu05/drainproof/actions/runs/42311937868 on `main`), and the demo pull request https://github.com/Adeolu05/drainproof/pull/2.
 - JSON and Markdown reports from the demo.
 - Dashboard screenshots (`docs/images/`).
-- A NEAR testnet transaction hash and explorer link, **only** if a run was actually executed and verified against the network.
+- The NEAR testnet transaction `J8MThEg4yZetZXYZWNE7n12ZtdQcKNN58pKd8YvcoggN` and its explorer link https://testnet.nearblocks.io/txns/J8MThEg4yZetZXYZWNE7n12ZtdQcKNN58pKd8YvcoggN (verified against three public RPCs on 2026-11-07).

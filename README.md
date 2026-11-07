@@ -175,7 +175,7 @@ Drainproof is **not** a wallet, a custody service or a trading bot. It never sig
 | Recipient-check pack: 8 scenarios for look-alike (0/o, 1/l, rn/m, small edits) and non-allowlisted accounts | `examples/recipient-checks` | Engine 8/8 pass; vault 7 pass, 1 skipped (Unicode look-alikes are not valid NEAR account IDs). Catches 7 deliberately loose matchers ([details](examples/recipient-checks)) |
 | GitHub Actions: repository CI and a user workflow template (actions pinned to SHAs) | `.github/workflows` | All six CI jobs, including `vault` and `action`, passed on GitHub on 2026-11-06 (UTC): on `main` at `e08f8a5` ([CI](https://github.com/Adeolu05/drainproof/actions/runs/42311937868), [Drainproof](https://github.com/Adeolu05/drainproof/actions/runs/42311937709)) and on [demo PR #2](https://github.com/Adeolu05/drainproof/pull/2) at `0556a0f` ([CI](https://github.com/Adeolu05/drainproof/actions/runs/42311692824)) |
 | Read-only web dashboard over CLI reports | `apps/web` | Implemented, data layer tested, visually checked |
-| NEAR: account-ID validation, testnet executor behind the execution gate | `@drainproof/near` | Implemented, tested against a local RPC stub. Live testnet run pending ([details](#live-testnet-run)) |
+| NEAR: account-ID validation, testnet executor behind the execution gate | `@drainproof/near` | Implemented, tested against a local RPC stub, and used once on testnet: a 0.01 NEAR transfer on 2026-11-07, checked against three public RPCs ([details](#live-testnet-run)) |
 | LLM prompt-injection demo: an LLM agent reads a poisoned page; recorded by default, NEAR AI Cloud live with a key, optional vault | `examples/llm-agent` | Implemented, 12 offline tests. Live mode was checked only up to authentication (no key was available); the shipped recording is a labelled stand-in ([details](#a-real-llm-a-poisoned-page)) |
 | Drainproof Vault: a NEAR contract that holds the funds and enforces the policy on-chain; the agent holds only a function-call key | `contracts/vault`, `examples/near-vault` | Implemented. 40 unit tests and 30 tests on a local NEAR node pass; 16 of the 40 built-in scenarios pass against it and 24 are skipped with reasons. Not deployed to testnet yet ([details](#what-the-agents-key-can-and-cannot-do)) |
 
@@ -184,7 +184,7 @@ Drainproof is **not** a wallet, a custody service or a trading bot. It never sig
 - **Function-call access keys.** The agent's NEAR key is a function-call access key that only allows `request_payment` on the vault contract, with a gas allowance. The NEAR protocol itself rejects a transfer, any other method, any other contract and any deposit made with it. The [sandbox tests](examples/near-vault/test/vault.sandbox.test.ts) check each of these on a local NEAR node.
 - **A NEAR smart contract, the Drainproof Vault** ([contracts/vault](contracts/vault)): Rust with near-sdk 5.30.0, built with cargo-near 0.22.0. It holds the funds (native NEAR), enforces the policy on-chain and writes NEP-297 events for every decision. Tested on a local NEAR node (near-sandbox, nearcore 2.14.0) through near-api-js 7.4.0. Not deployed to testnet yet.
 - **NEAR AI Cloud response signatures**, in the optional live mode of the [LLM demo](#a-real-llm-a-poisoned-page): each completion's Ed25519 signature is checked against the exact request and response bytes. TEE attestation is not verified, and no live run is recorded yet.
-- **NEAR account IDs and yoctoNEAR** in `@drainproof/near`: account-ID validation (including a mainnet account used on testnet) and exact 24-decimal amounts. A testnet executor built on near-api-js is prepared, but no testnet transaction has been sent yet ([Live testnet run](#live-testnet-run)).
+- **NEAR account IDs and yoctoNEAR** in `@drainproof/near`: account-ID validation (including a mainnet account used on testnet) and exact 24-decimal amounts. The testnet executor, built on near-api-js, has been used on testnet once: a 0.01 NEAR transfer on 2026-11-07, read back from three public RPCs ([Live testnet run](#live-testnet-run)).
 
 Not used: NEAR mainnet (signing is refused), chain signatures, NEAR Intents, fungible-token (NEP-141) payments, and TEE attestation verification.
 
@@ -314,17 +314,20 @@ The web app has two parts: a project landing page at `/` and the dashboard at `/
 
 ### Live testnet run
 
-No live testnet transaction is recorded yet, and none is claimed. When one is run with the step-by-step procedure in [docs/testnet-run.md](docs/testnet-run.md) and checked against the network, its evidence goes here:
+One live testnet transfer has been made, by the project owner on 2026-11-07, with the `examples/near-testnet` demo and the procedure in [docs/testnet-run.md](docs/testnet-run.md). Every value in this table was read back from three public testnet RPCs (FASTNEAR `test.rpc.fastnear.com`, dRPC `near-testnet.drpc.org` and NEAR `archival-rpc.testnet.near.org`, each reporting `chain_id: testnet`), which returned identical results:
 
-| Field | Value |
+| Field | Value (from the RPC method `tx`, `wait_until: FINAL`) |
 | --- | --- |
-| Date | _pending_ |
-| Transaction hash | _pending_ |
-| Explorer link | _pending_ |
-| Signer | _pending_ |
-| Receiver | _pending_ |
-| Amount | _pending_ |
-| Final status | _pending_ |
+| Date | 2026-11-07 18:24:28 UTC (timestamp of block 276667349) |
+| Transaction hash | `J8MThEg4yZetZXYZWNE7n12ZtdQcKNN58pKd8YvcoggN` |
+| Explorer link | https://testnet.nearblocks.io/txns/J8MThEg4yZetZXYZWNE7n12ZtdQcKNN58pKd8YvcoggN |
+| Signer | `dpeluola-agent.testnet` |
+| Receiver | `dpeluola-shop.testnet` |
+| Amount | one `Transfer` action of `10000000000000000000000` yoctoNEAR (exactly 0.01 NEAR) |
+| Block | height 276667349, hash `FNaf3WTHo2ppBFJfnzGvtMw29evUa9BCbrCmJZ8Xmbaz` |
+| Final status | `SuccessValue` (success), `final_execution_status: FINAL`; the transfer receipt executed on `dpeluola-shop.testnet` with `SuccessValue` |
+
+From the owner's run of the demo (not something the RPC can show): the over-limit payment and the mainnet-account payment were `BLOCK`ed before the execution boundary, and the in-policy payment printed this hash with `Final status: CONFIRMED` and `Re-read from the RPC by hash: CONFIRMED (matches)`. The vault contract has not been deployed to testnet; this transfer used the direct testnet executor.
 
 ## What the agent's key can and cannot do
 
@@ -405,11 +408,11 @@ Verified on 2026-11-06 (Node 24.10.0, pnpm 10.28.0, Linux), unless a line gives 
 - `pnpm bench` (after `pnpm build`): over four runs on an Intel Core i7-1185G7, `authorize()` took a mean of 22.0 to 27.2 µs (p99 61 to 74 µs), against a target of under 10 ms. The 40-scenario suite took 14 to 22 ms in the runner, or 212 to 286 ms wall time including Node startup. Timings depend on the machine and its load.
 - Drainproof Vault, on a local NEAR node: `cargo test` passes 40 unit tests, `cargo clippy --all-targets -- -D warnings` and `cargo fmt --check` are clean, `pnpm test:vault` passes 30 integration tests, and 16 of the 40 built-in scenarios pass against the contract (24 skipped, each with its reason). The [recipient-check pack](examples/recipient-checks) passes 7 of 8 against the contract (1 skipped: Unicode look-alikes are not valid NEAR account IDs). See [Verify the vault yourself](#verify-the-vault-yourself-optional).
 - GitHub Actions (2026-11-06, UTC): on `main` at `e08f8a5`, all six [CI jobs](https://github.com/Adeolu05/drainproof/actions/runs/42311937868) passed and the [Drainproof workflow](https://github.com/Adeolu05/drainproof/actions/runs/42311937709) passed. On [demo PR #2](https://github.com/Adeolu05/drainproof/pull/2) at `0556a0f`, all six [CI jobs](https://github.com/Adeolu05/drainproof/actions/runs/42311692824) passed, including the `vault` job (contract tests, 30 sandbox tests and both scenario suites on a local NEAR node on the GitHub runner) and the `action` job (the action passed a safe policy and the NEAR suite, and failed the unsafe policy with exit code 1 and the CRITICAL finding), and the [Drainproof workflow](https://github.com/Adeolu05/drainproof/actions/runs/42311692816) failed the pull request with exit code 1, as intended.
+- NEAR testnet, 2026-11-07: one 0.01 NEAR transfer by the testnet executor (`J8MThEg4…`), final and successful, with signer, receiver and exact amount confirmed by three public RPCs ([Live testnet run](#live-testnet-run)). It was run by the project owner; the RPC check was repeated independently.
 - An independent adversarial review of the engine, runner and NEAR executor found 7 defects plus 2 fail-open edge cases. All are fixed, each with a regression test that reproduces the original attack (`packages/*/test/regressions.test.ts` and the NEAR tests).
 
 Not yet verified:
 
-- Live NEAR testnet execution (see [Live testnet run](#live-testnet-run)).
 - The vault on testnet. Its deploy, agent-key and policy scripts were rehearsed only against a local sandbox.
 - The GitHub Action used from another repository (`uses: Adeolu05/drainproof@<sha>`). In this repository it runs through `uses: ./`; a local rehearsal from an outside project with only a policy file passed (exit code 0) and, after allowlisting `attacker-wallet`, failed with exit code 1 and the CRITICAL finding.
 

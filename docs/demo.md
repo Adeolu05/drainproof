@@ -106,7 +106,7 @@ Simulation only: testnet execution is disabled (set DRAINPROOF_NEAR_EXECUTION=te
   Would proceed to execution. Testnet execution is not enabled, so no transaction was signed or sent.
 ```
 
-**Say exactly what is true:** "The NEAR suite covers exact yoctoNEAR limits, cross-network accounts and concurrent spending. The executor is tested against the real near-api-js library and a local RPC stub. Blocked proposals make no RPC call at all, and a transfer is broadcast at most once. We have not yet sent a live testnet transaction."
+**Say exactly what is true:** "The NEAR suite covers exact yoctoNEAR limits, cross-network accounts and concurrent spending. The executor is tested against the real near-api-js library and a local RPC stub. Blocked proposals make no RPC call at all, and a transfer is broadcast at most once. One live testnet transfer of 0.01 NEAR was made on 2026-11-07 and checked against three public RPCs."
 
 If you have run the [testnet procedure](testnet-run.md) before recording, show that run and its hash in a block explorer instead. **Never show a hash that did not come from the network.**
 

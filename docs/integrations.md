@@ -74,7 +74,7 @@ The executor above signs native transfers, which needs a full-access key. The [D
 
 ### What is not done
 
-- **Live testnet run: pending.** No live testnet transaction has been executed or verified, and none is claimed. Treat the on-chain path as unverified until the procedure in [testnet-run.md](testnet-run.md) has been run and its result recorded in the README's [Live testnet run](../README.md#live-testnet-run) section.
+- **Live testnet run: done once.** On 2026-11-07 the project owner ran the procedure in [testnet-run.md](testnet-run.md): one 0.01 NEAR transfer (`J8MThEg4yZetZXYZWNE7n12ZtdQcKNN58pKd8YvcoggN`), whose signer, receiver, exact amount and final success were confirmed by three public testnet RPCs (README, [Live testnet run](../README.md#live-testnet-run)). One run shows the path works; it is not a load or failure-mode test of the live network.
 - The executor signs with a **full-access key**, because native transfers need one. Whoever holds that key can do anything with the account, so use a dedicated testnet account and delete the key after the run (the guide shows how). The vault avoids this for the agent (see above), but it has not run on testnet yet.
 - Only native NEAR transfers. Fungible tokens (NEP-141), function calls and meta-transactions are not supported.
 - No mainnet support, by design.

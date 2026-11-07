@@ -15,7 +15,7 @@ Toolchain: Node.js 22.23, pnpm 10.28.
 | NEAR HACKATHON rules | **Confirmed** by the project owner from the official rules. | Submission window, judging dates, tracks and required deliverables are listed in [hackathon-submission.md](hackathon-submission.md). |
 | NEAR documentation | **Verified** against the official documentation source, `github.com/near/docs` (commit `fa2acf6`, 2026-11-05). | `tools/near-api.mdx` (provider, account and transfer examples, `viewTransactionStatus`), `protocol/accounts-contracts/account-id.mdx` (account-ID rules) and `getting-started/faucet.mdx` (testnet faucets). These pages are unchanged since commit `e2d2ea1`, where they were first checked. |
 | `near-api-js@7.4.0` (npm registry) | **Verified at the type level.** The published `.d.ts` files and README were inspected. | `Account(accountId, provider, signer)`, `Account.transfer({ receiverId, amount })` returns `RpcTransactionResponse`, and `JsonRpcProvider.viewTransactionStatus({ txHash, accountId, waitUntil })`. Requires Node >= 22.22.2. |
-| Live NEAR testnet run | **Pending.** | No on-chain transaction has been executed or is claimed. The README's "Live testnet run" section records the evidence once a run has been checked against the network. |
+| Live NEAR testnet run | **Done once (2026-11-07).** | One 0.01 NEAR transfer by the project owner, confirmed by three public testnet RPCs; see the README's "Live testnet run" section. |
 
 ## Proposed architecture
 
@@ -59,7 +59,6 @@ Deferred:
 - SARIF output.
 - IANA time zones for daily windows (only fixed UTC offsets are supported).
 - Hosted dashboard persistence.
-- Live testnet verification.
 - Additional agent framework adapters.
 
 ## Testing approach

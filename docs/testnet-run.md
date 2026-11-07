@@ -211,3 +211,21 @@ git checkout -- examples/near-testnet/policy.yaml
 ## 10. Record the evidence
 
 Share only the transaction hash and the two account IDs, never the key or the seed phrase. Before anything goes into the README's [Live testnet run](../README.md#live-testnet-run) table, the hash is checked against a public testnet RPC: final status, signer, receiver and exact amount. If that check cannot be made, the table stays `pending`.
+
+## Recorded run (2026-11-07)
+
+The project owner ran this procedure once, with the `examples/near-testnet` demo. The transaction was then read back with the RPC method `tx` (`wait_until: FINAL`) from three public testnet endpoints listed in the NEAR docs (FASTNEAR `https://test.rpc.fastnear.com`, dRPC `https://near-testnet.drpc.org`, NEAR `https://archival-rpc.testnet.near.org`). Each reported `chain_id: testnet`, and all three returned identical results:
+
+| Field | Value |
+| --- | --- |
+| Transaction hash | `J8MThEg4yZetZXYZWNE7n12ZtdQcKNN58pKd8YvcoggN` |
+| Explorer | https://testnet.nearblocks.io/txns/J8MThEg4yZetZXYZWNE7n12ZtdQcKNN58pKd8YvcoggN |
+| Signer | `dpeluola-agent.testnet` |
+| Receiver | `dpeluola-shop.testnet` |
+| Actions | one `Transfer` of `10000000000000000000000` yoctoNEAR (0.01 NEAR) |
+| Block | height 276667349, hash `FNaf3WTHo2ppBFJfnzGvtMw29evUa9BCbrCmJZ8Xmbaz`, 2026-11-07 18:24:28 UTC |
+| Outcome | `final_execution_status: FINAL`, status `SuccessValue`; the transfer receipt executed on `dpeluola-shop.testnet` with `SuccessValue` |
+
+Reported by the owner from the demo output, which the RPC cannot show: the over-limit payment and the mainnet-account payment were blocked before the execution boundary, and the in-policy payment printed `Final status: CONFIRMED` and `Re-read from the RPC by hash: CONFIRMED (matches)`.
+
+The NearBlocks page returned HTTP 403 to an automated request, so the explorer page itself was not checked; the RPC data above is the evidence.
