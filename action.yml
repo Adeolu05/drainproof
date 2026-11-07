@@ -3,7 +3,7 @@ description: Fail the pull request when a change would let your AI agent be drai
 author: Adeolu05
 
 branding:
-  icon: shield
+  icon: droplet
   color: green
 
 inputs:
