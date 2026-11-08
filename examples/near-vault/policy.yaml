@@ -18,7 +18,9 @@ limits:
 recipients:
   mode: allowlist
   allowed:
-    # Placeholders: add the testnet account you will pay (it must exist).
+    # Placeholders: these two accounts do NOT exist on testnet. deploy.mjs and push-policy.mjs
+    # refuse recipients that do not exist (anyone could create them and receive payments), so
+    # replace them with the testnet accounts you will pay before deploying.
     - merchant-example.testnet
     - data-provider-example.testnet
 networks:
