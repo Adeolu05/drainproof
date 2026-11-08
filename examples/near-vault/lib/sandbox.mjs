@@ -3,6 +3,7 @@
 // Everything here runs against a NEAR node on 127.0.0.1 started by the official
 // `near-sandbox` package (nearcore sandbox 2.14.0). Nothing touches testnet or mainnet.
 // Every key is generated at runtime with KeyPair.fromRandom and lives only in memory.
+import { rm } from "node:fs/promises";
 import { GenesisAccount, Sandbox } from "near-sandbox";
 import { Account, JsonRpcProvider, KeyPair, actions } from "near-api-js";
 import { decodeReturn, eventsOf, failureMessage, gasBurnt } from "./outcome.mjs";
@@ -15,6 +16,32 @@ export { WASM_PATH, loadWasm } from "./wasm.mjs";
 export const NEAR = 10n ** 24n;
 export const TGAS = 10n ** 12n;
 /** The default test policy, as the contract's JSON `VaultPolicy`. Amounts are yoctoNEAR strings. */
+/**
+ * Stops a sandbox node without hanging. near-sandbox 0.3.5's tearDown() sends SIGTERM and then
+ * waits for the process's "exit" event with no time limit: if the node is slow to shut down,
+ * or has already exited, that wait never ends. Here the node gets `graceMs` to stop, then
+ * SIGKILL; a node that already exited only has its data directory removed.
+ */
+export async function stopSandbox(sandbox, graceMs = 20_000) {
+  const child = sandbox.childProcess;
+  if (child.exitCode !== null || child.signalCode !== null) {
+    await rm(sandbox.homeDir, { recursive: true, force: true });
+    return;
+  }
+  const done = sandbox.tearDown();
+  let timer;
+  const timedOut = new Promise((resolve) => {
+    timer = setTimeout(resolve, graceMs, "timeout");
+  });
+  const first = await Promise.race([done.then(() => "done"), timedOut]);
+  clearTimeout(timer);
+  if (first === "timeout") {
+    child.kill("SIGKILL");
+    await Promise.race([done, new Promise((resolve) => setTimeout(resolve, 10_000))]);
+    await rm(sandbox.homeDir, { recursive: true, force: true });
+  }
+}
+
 export function testPolicy(recipients, overrides = {}) {
   return {
     max_transaction: (NEAR / 2n).toString(),
@@ -82,7 +109,7 @@ export async function startVault({
   });
   const deployFailure = failureMessage(deployTx);
   if (deployFailure) {
-    await sandbox.tearDown();
+    await stopSandbox(sandbox);
     throw new Error(`vault deployment failed: ${deployFailure}`);
   }
 
@@ -128,6 +155,6 @@ export async function startVault({
     requestPayment: (args, opts) => call(agent, "request_payment", args, opts),
     /** An owner call with the 1 yoctoNEAR the vault requires. */
     ownerCall: (method, args, opts = {}) => call(owner, method, args, { deposit: 1n, ...opts }),
-    stop: () => sandbox.tearDown(),
+    stop: () => stopSandbox(sandbox),
   };
 }
