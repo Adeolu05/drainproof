@@ -43,7 +43,7 @@ Checked against the NEAR docs source repository (github.com/near/docs) at commit
 **Tests, as built:**
 
 - **Contract unit tests in Rust** (`cargo test` in `contracts/vault`, `near-sdk` feature `unit-testing`): 40 tests. They set the block timestamp exactly, so day boundaries and approval expiry are tested to the nanosecond.
-- **Sandbox integration tests in TypeScript** (`pnpm test:vault`: Vitest, `near-sandbox` 0.3.5 for JavaScript and `near-api-js` 7.4.0): 30 tests. They cover real transactions, real function-call keys and real transfers against the real wasm. The scenario target and the testnet scripts use the same client stack.
+- **Sandbox integration tests in TypeScript** (`pnpm test:vault`: Vitest, `near-sandbox` 0.3.5 for JavaScript and `near-api-js` 7.4.0): 30 tests, plus 7 tests of the optional lock (`test/lock.sandbox.test.ts`). They cover real transactions, real function-call keys and real transfers against the real wasm. The scenario target and the testnet scripts use the same client stack.
 
 ## Accounts and keys
 

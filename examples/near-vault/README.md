@@ -40,7 +40,7 @@ pnpm --filter @drainproof/example-near-vault demo
 Results of these commands on 2026-11-06 (Node 24.10.0, Rust 1.97.0, cargo-near 0.22.0, Linux), with `ulimit -n 65535 &&` in front of each sandbox command:
 
 - `cargo test` in `contracts/vault`: 40 unit tests pass; `cargo clippy --all-targets -- -D warnings` and `cargo fmt --check` are clean.
-- `pnpm test:vault`: 30 sandbox tests pass.
+- `pnpm test:vault`: 41 tests pass (30 vault tests and 7 lock tests on the local node, and 4 offline checks of the testnet scripts).
 - Built-in scenarios against the vault: 16 pass, 0 fail, 24 are skipped, each with its reason (`Result: PASSED (exit code 0)`). Which scenarios apply, and why the others do not, is explained in [docs/vault-design.md](../../docs/vault-design.md#scenario-target-which-built-in-scenarios-apply).
 - The demo prints `ALLOW` for the allowed payment, followed by its `payment_settled` event with status `PAID`; `BLOCK (RECIPIENT_NOT_ALLOWED)` with its `EVENT_JSON` log line for the injected one; `REQUIRE_APPROVAL` for the payment above the threshold; and the protocol rejecting the agent's key when it tries to call `withdraw` ("Access key does not allow method withdraw") or to transfer NEAR ("Access key requires full access").
 

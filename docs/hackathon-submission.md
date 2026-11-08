@@ -91,7 +91,7 @@ NEAR's role: the Drainproof Vault, a NEAR smart contract in Rust, holds the fund
 ### Drainproof Vault (NEAR contract)
 - [x] Contract in Rust (`near-sdk` 5.30.0), built with `cargo-near` 0.22.0; design and threat model in [vault-design.md](vault-design.md)
 - [x] The agent holds only a function-call key for `request_payment`; owner methods need the owner and exactly 1 yoctoNEAR
-- [x] 40 unit tests and 30 tests on a local NEAR node; 16 of the 40 built-in scenarios pass against the contract and 24 are skipped with reasons
+- [x] 40 unit tests and 37 tests on a local NEAR node (30 vault tests, 7 lock tests); 16 of the 40 built-in scenarios pass against the contract and 24 are skipped with reasons
 - [x] Expired approval requests cannot jam the 50-slot approval queue (review fix, with unit and sandbox tests)
 - [x] CI job defined (`vault` in `.github/workflows/ci.yml`)
 - [x] CI job has run on GitHub (on `main`: [run](https://github.com/Adeolu05/drainproof/actions/runs/42311937868); on demo PR #2: [run](https://github.com/Adeolu05/drainproof/actions/runs/42311692824); both 2026-11-06, success)
