@@ -278,12 +278,12 @@ jobs:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
-      - uses: Adeolu05/drainproof@82d8e791abf36dd6e061234d0ff17ba1044a9068
+      - uses: Adeolu05/drainproof@4ae7bf1570205e53ba0a5c4dc1b5c34923695c97
         with:
           policy: policies/agent.yaml   # your policy file
 ```
 
-Every pull request then runs the 40 built-in attack scenarios against that policy. A pull request that would let one through fails the check, and the job summary shows the finding, the expected and observed decision, and how to fix it. There is no tag yet, so pin a commit SHA of this repository (GitHub recommends full SHAs for third-party actions anyway); the one above is the commit that added the action.
+Every pull request then runs the 40 built-in attack scenarios against that policy. A pull request that would let one through fails the check, and the job summary shows the finding, the expected and observed decision, and how to fix it. There is no tag yet, so pin a commit SHA of this repository (GitHub recommends full SHAs for third-party actions anyway); the one above is the latest commit that changed the action (temporary file and input hardening from the security review).
 
 - **Policy file:** start from [examples/payment-policy/policy.yaml](examples/payment-policy/policy.yaml); the schema is in [docs/policy-schema.md](docs/policy-schema.md).
 - **Inputs:** `policy` (your policy; the 40 built-in scenarios and the built-in engine), or `config` (a full `drainproof.yaml` for your own scenarios or your own guard as the target); `working-directory`; `report-dir` (default `drainproof-report`, holding `drainproof-report.json` and `.md`); `github-summary` (default `true`); `node-version` (default `22.22.2`, or `""` to use the runner's Node.js).
