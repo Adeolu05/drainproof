@@ -243,3 +243,14 @@ The project owner also deployed the [vault](../examples/near-vault) with its tes
 | Blocked payment, 0.01 NEAR to `attacker.testnet` with the injection memo, signed with that key | [8uKx8H4tML4yhY33qV3xRDWB2ZUwErHsVxKPug1EPCwK](https://testnet.nearblocks.io/txns/8uKx8H4tML4yhY33qV3xRDWB2ZUwErHsVxKPug1EPCwK) | `BLOCK` (`RECIPIENT_NOT_ALLOWED`), no transfer, nothing stored |
 
 The on-chain policy is `examples/near-vault/policy.yaml` with `- dpeluola-shop.testnet` added under `recipients.allowed`; its hash, `sha256:b6691715afb1c43b848a771b0e740dee94d0b3131face1455f6da5ea2d514771`, was recomputed from that file and matches. Details: the README's [Drainproof Vault on testnet](../README.md#drainproof-vault-on-testnet).
+
+## Vault policy change and lock (2026-11-08)
+
+From `main` at `4558444` (reported by the owner), read back from FASTNEAR and dRPC (identical results):
+
+| Step | Transaction | Result |
+| --- | --- | --- |
+| `push-policy.mjs policy.live.yaml --send`, signed by the owner | [ApgYHwq1g7XEKVJ5Q1K2jb1Vh78qqFRzrfdMTjpgftUn](https://testnet.nearblocks.io/txns/ApgYHwq1g7XEKVJ5Q1K2jb1Vh78qqFRzrfdMTjpgftUn) | `set_policy` with recipients `["dpeluola-shop.testnet"]` only, event `policy_updated` `sha256:62fe4044fe17b6b0254bd4405f280acadccd513cd57eba32786bd8a89a8826ad`, block 276753418 |
+| `lock-vault.mjs --lock`, signed by the vault account | [FRbt93jyyKgsLyyHvRfE9PnDAJRotWCdVVK55XNjXpiZ](https://testnet.nearblocks.io/txns/FRbt93jyyKgsLyyHvRfE9PnDAJRotWCdVVK55XNjXpiZ) | `DeleteKey` of `ed25519:HVdWN3wzskMhmSPWBbe5HfFWHMaQRbvcuTjwerSWXcmj`, block 276753521. `view_access_key_list` shows that key at block 276753520 and `"keys":[]` from block 276753543 on; the code hash stays `Dgobcbf8FBcEgytMgYktMycezt2CYGqKB2SVqFYNdKMX` |
+| Allowed payment after the lock, function-call key `BTT53…` | [TsoccF9hRu9azZbygGfkMtuS7zyTYCSbb2SvM8htQqD](https://testnet.nearblocks.io/txns/TsoccF9hRu9azZbygGfkMtuS7zyTYCSbb2SvM8htQqD) | `ALLOW`, `payment_settled` `PAID`, transfer of 0.01 NEAR to `dpeluola-shop.testnet` |
+| Blocked payment after the lock, function-call key `BTT53…` | [D2zXmkEcnV31CXsjtkRX6k3tKTcH1xYWv56hrDamUbgQ](https://testnet.nearblocks.io/txns/D2zXmkEcnV31CXsjtkRX6k3tKTcH1xYWv56hrDamUbgQ) | `BLOCK` (`RECIPIENT_NOT_ALLOWED`), no transfer, nothing stored |

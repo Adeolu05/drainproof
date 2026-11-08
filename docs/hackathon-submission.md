@@ -95,6 +95,7 @@ NEAR's role: the Drainproof Vault, a NEAR smart contract in Rust, holds the fund
 - [x] Expired approval requests cannot jam the 50-slot approval queue (review fix, with unit and sandbox tests)
 - [x] CI job defined (`vault` in `.github/workflows/ci.yml`)
 - [x] CI job has run on GitHub (on `main`: [run](https://github.com/Adeolu05/drainproof/actions/runs/42311937868); on demo PR #2: [run](https://github.com/Adeolu05/drainproof/actions/runs/42311692824); both 2026-11-06, success)
+- [x] Locked on testnet (2026-11-08): placeholder recipients removed ([ApgYHwq1…](https://testnet.nearblocks.io/txns/ApgYHwq1g7XEKVJ5Q1K2jb1Vh78qqFRzrfdMTjpgftUn)), every access key of the vault account deleted ([FRbt93jy…](https://testnet.nearblocks.io/txns/FRbt93jyyKgsLyyHvRfE9PnDAJRotWCdVVK55XNjXpiZ)); after the lock the agent's function-call key still paid the shop ([TsoccF9h…](https://testnet.nearblocks.io/txns/TsoccF9hRu9azZbygGfkMtuS7zyTYCSbb2SvM8htQqD)) and was refused for `attacker.testnet` ([D2zXmkEc…](https://testnet.nearblocks.io/txns/D2zXmkEcnV31CXsjtkRX6k3tKTcH1xYWv56hrDamUbgQ)), confirmed by two public RPCs
 - [x] Deployed and exercised on testnet: `vault.dpeluola-owner.testnet` (2026-11-07), code byte-identical to a build of this repository; an allowed and a blocked payment signed with the agent's function-call key, confirmed by two public RPCs (README, [Drainproof Vault on testnet](../README.md#drainproof-vault-on-testnet))
 
 ### LLM prompt-injection demo
