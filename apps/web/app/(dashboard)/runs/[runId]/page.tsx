@@ -39,7 +39,7 @@ export default async function RunPage({ params }: { params: Promise<{ runId: str
         <Metric label="Scenarios" value={s.total} />
         <Metric label="Passed" value={<span className="text-pass">{s.passed}</span>} />
         <Metric label="Failed" value={<span className={s.failed ? "text-fail" : ""}>{s.failed}</span>} />
-        <Metric label="Errors" value={<span className={s.errored ? "text-error" : ""}>{s.errored}</span>} />
+        <Metric label="Errors" value={<span className={s.errored ? "text-warn" : ""}>{s.errored}</span>} />
         <Metric label="Skipped" value={s.skipped} />
         <Metric label="Duration" value={formatDuration(run.durationMs)} />
       </div>
@@ -50,7 +50,7 @@ export default async function RunPage({ params }: { params: Promise<{ runId: str
             {run.findings.map((f) => (
               <li key={f.id} className="flex items-start gap-3 py-2">
                 <SeverityBadge severity={f.severity} />
-                <Link href={`/runs/${run.runId}/findings/${f.scenarioId}`} className="inline-flex min-h-6 items-center text-sm text-accent hover:underline">
+                <Link href={`/runs/${run.runId}/findings/${f.scenarioId}`} className="inline-flex min-h-6 items-center text-sm link">
                   {f.title}
                 </Link>
               </li>
@@ -64,7 +64,7 @@ export default async function RunPage({ params }: { params: Promise<{ runId: str
         {run.scenarios.map((sc) => {
           const codes = observedReasonCodes(sc);
           return (
-            <details key={sc.id} className="group rounded-2xl border border-border bg-surface" open={sc.status === "FAIL" || sc.status === "ERROR"}>
+            <details key={sc.id} className="group rounded-md border border-border bg-surface" open={sc.status === "FAIL" || sc.status === "ERROR"}>
               <summary className="flex cursor-pointer list-none flex-wrap items-center gap-3 px-4 py-3">
                 <StatusBadge status={sc.status} />
                 <span className="font-medium">{sc.name}</span>
@@ -83,8 +83,8 @@ export default async function RunPage({ params }: { params: Promise<{ runId: str
                     <dd className="font-mono text-xs text-fail">{sc.observed}</dd>
                   </dl>
                 ) : null}
-                {sc.error ? <p className="mt-3 text-error">Error: {sc.error.message}</p> : null}
-                {sc.skipReason ? <p className="mt-3 text-skip">Skipped: {sc.skipReason}</p> : null}
+                {sc.error ? <p className="mt-3 text-warn">Error: {sc.error.message}</p> : null}
+                {sc.skipReason ? <p className="mt-3 text-muted">Skipped: {sc.skipReason}</p> : null}
                 {codes.length > 0 ? (
                   <p className="mt-3">
                     <span className="text-muted">Reason codes: </span>
@@ -98,11 +98,11 @@ export default async function RunPage({ params }: { params: Promise<{ runId: str
                     File <span className="font-mono">{sc.file}</span>
                   </span>
                   <span>{formatDuration(sc.durationMs)}</span>
-                  <Link href={`/scenarios/${sc.id}`} className="inline-flex min-h-11 sm:min-h-6 items-center text-accent hover:underline">
+                  <Link href={`/scenarios/${sc.id}`} className="inline-flex min-h-11 sm:min-h-6 items-center link">
                     Scenario history →
                   </Link>
                   {sc.status === "FAIL" ? (
-                    <Link href={`/runs/${run.runId}/findings/${sc.id}`} className="inline-flex min-h-11 sm:min-h-6 items-center text-accent hover:underline">
+                    <Link href={`/runs/${run.runId}/findings/${sc.id}`} className="inline-flex min-h-11 sm:min-h-6 items-center link">
                       Finding →
                     </Link>
                   ) : null}
@@ -148,7 +148,7 @@ export default async function RunPage({ params }: { params: Promise<{ runId: str
           <dd>{run.drainproofVersion}</dd>
         </dl>
         {run.policy.warnings.length > 0 ? (
-          <ul className="mt-3 list-disc pl-5 text-sm text-skip">
+          <ul className="mt-3 list-disc pl-5 text-sm text-warn">
             {run.policy.warnings.map((w) => (
               <li key={w}>{w}</li>
             ))}

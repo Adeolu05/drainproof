@@ -21,7 +21,7 @@ export default async function FindingPage({ params }: { params: Promise<{ runId:
   return (
     <>
       <p className="mb-2 text-sm">
-        <Link href={`/runs/${run.runId}`} className="inline-flex min-h-11 items-center text-accent hover:underline sm:min-h-6">
+        <Link href={`/runs/${run.runId}`} className="inline-flex min-h-11 items-center link sm:min-h-6">
           ← Run {run.runId.slice(0, 12)}
         </Link>
       </p>

@@ -7,7 +7,7 @@ import { loadRuns, scenarioLibrary, type ScenarioHistoryEntry } from "@/lib/data
 export const metadata: Metadata = { title: "Scenario library" };
 export const dynamic = "force-dynamic";
 
-const DOT: Record<string, string> = { PASS: "bg-pass", FAIL: "bg-fail", ERROR: "bg-error", SKIPPED: "bg-skip" };
+const DOT: Record<string, string> = { PASS: "bg-pass-mark", FAIL: "bg-fail", ERROR: "bg-warn", SKIPPED: "bg-border-strong" };
 
 /** Outcome history, newest first. Each dot sits in a 24x24 tap target linking to its run. */
 function History({ history }: { history: readonly ScenarioHistoryEntry[] }) {
@@ -20,7 +20,7 @@ function History({ history }: { history: readonly ScenarioHistoryEntry[] }) {
             href={`/runs/${h.runId}`}
             title={`${h.status} · ${h.startedAt}`}
             aria-label={`${h.status} in run ${h.runId.slice(0, 12)}`}
-            className="flex h-6 w-6 items-center justify-center rounded hover:bg-surface-2"
+            className="flex h-6 w-6 items-center justify-center rounded-sm hover:bg-surface-2"
           >
             <span aria-hidden="true" className={`block h-3 w-3 rounded-sm ${DOT[h.status]}`} />
           </Link>
@@ -49,9 +49,9 @@ export default async function ScenariosPage() {
           {/* Phones and tablets: cards */}
           <ul aria-label="Scenario library" className="grid gap-2 md:grid-cols-2 md:gap-3 lg:hidden">
             {lib.map(({ latest, history }) => (
-              <li key={latest.id} className="rounded-2xl border border-border bg-surface p-4">
+              <li key={latest.id} className="rounded-md border border-border bg-surface p-4">
                 <div className="flex items-start justify-between gap-3">
-                  <Link href={`/scenarios/${latest.id}`} className="min-w-0 font-medium text-accent hover:underline">
+                  <Link href={`/scenarios/${latest.id}`} className="min-w-0 font-medium link">
                     {latest.name}
                   </Link>
                   <StatusBadge status={history[0]!.status} />
@@ -68,10 +68,10 @@ export default async function ScenariosPage() {
             ))}
           </ul>
           {/* Laptops and up: table */}
-          <div className="hidden overflow-x-auto rounded-2xl border border-border bg-surface lg:block">
+          <div className="hidden overflow-x-auto rounded-md border border-border bg-surface lg:block">
             <table className="w-full text-left text-sm">
               <caption className="sr-only">Scenario library</caption>
-              <thead className="border-b border-border text-xs uppercase tracking-wide text-muted">
+              <thead className="border-b border-border text-xs text-muted">
                 <tr>
                   <th scope="col" className="px-4 py-2 font-medium">Scenario</th>
                   <th scope="col" className="px-4 py-2 font-medium">Category</th>
@@ -84,7 +84,7 @@ export default async function ScenariosPage() {
                 {lib.map(({ latest, history }) => (
                   <tr key={latest.id} className="border-b border-border align-top last:border-0">
                     <td className="px-4 py-2">
-                      <Link href={`/scenarios/${latest.id}`} className="inline-flex min-h-6 items-center font-medium text-accent hover:underline">
+                      <Link href={`/scenarios/${latest.id}`} className="inline-flex min-h-6 items-center font-medium link">
                         {latest.name}
                       </Link>
                       <div className="font-mono text-xs text-muted">{latest.id}</div>

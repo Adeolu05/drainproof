@@ -1,59 +1,48 @@
 @import "tailwindcss";
 
 /* ── Design tokens ──────────────────────────────────────────────────────────
+   One place for every colour. Neutral greys for structure, the brand green
+   (from the logo) as the single accent meaning "held / passed", one red for
+   findings and attacks, amber only for warnings and the demo banner.
    Every text/background pair used by the UI meets WCAG AA (4.5:1) in both
-   themes; gradient text is only used at large sizes (needs 3:1). */
+   themes; --pass-mark is only used for graphics and large marks (3:1). */
 :root {
-  --bg: #f5f7fb;
+  --bg: #f6f6f5;
   --surface: #ffffff;
-  --surface-2: #eef1f7;
-  --fg: #0a0c12;
-  --muted: #4f5768;
-  --border: #e1e5ee;
-  --border-strong: #cfd5e2;
-  --accent: #0a7a62;
-  --pass: #126b33;
-  --pass-bg: #e6f5ec;
-  --fail: #b42318;
-  --fail-bg: #fdecea;
-  --error: #6d28d9;
-  --error-bg: #f1ebff;
-  --skip: #7a5600;
-  --skip-bg: #fdf4dd;
-  --brand-1: #079a6c;
-  --brand-2: #0a7fb5;
-  --brand-3: #5b4be0;
+  --surface-2: #eeefef;
+  --fg: #121417;
+  --muted: #555b63;
+  --border: #dfe1e4;
+  --border-strong: #c3c8ce;
+  --pass: #15723a; /* green text on light surfaces */
+  --pass-mark: #1f9d55; /* the logo green, for marks and the wordmark */
+  --pass-bg: #e7f4ec;
+  --fail: #b3261e;
+  --fail-bg: #fbeceb;
+  --warn: #7a5200;
+  --warn-bg: #fbf3df;
+  --warn-border: #e6cf96;
   --mark: #1f9d55;
-  --glow-1: rgb(7 154 108 / 0.16);
-  --glow-2: rgb(91 75 224 / 0.14);
-  --grid-line: rgb(10 12 18 / 0.05);
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --bg: #07080b;
-    --surface: #0d0f14;
-    --surface-2: #151924;
-    --fg: #eef1f7;
-    --muted: #9aa4b8;
-    --border: #1d2230;
-    --border-strong: #2a3142;
-    --accent: #5ee6c0;
-    --pass: #4ade80;
-    --pass-bg: #0e2a1b;
-    --fail: #ff7b72;
-    --fail-bg: #3a1414;
-    --error: #c4a6ff;
-    --error-bg: #251b40;
-    --skip: #f2c55c;
-    --skip-bg: #33280c;
-    --brand-1: #22e3a1;
-    --brand-2: #3ccbf4;
-    --brand-3: #9b8cff;
+    --bg: #0c0d0f;
+    --surface: #131518;
+    --surface-2: #1a1d21;
+    --fg: #e9ebee;
+    --muted: #9ea4ad;
+    --border: #262a30;
+    --border-strong: #3a3f47;
+    --pass: #5fd08a;
+    --pass-mark: #5fd08a;
+    --pass-bg: #12261a;
+    --fail: #ff7a72;
+    --fail-bg: #2d1514;
+    --warn: #e8c069;
+    --warn-bg: #2a2111;
+    --warn-border: #5c4718;
     --mark: #5fd08a;
-    --glow-1: rgb(34 227 161 / 0.16);
-    --glow-2: rgb(155 140 255 / 0.18);
-    --grid-line: rgb(255 255 255 / 0.045);
   }
 }
 
@@ -65,18 +54,14 @@
   --color-muted: var(--muted);
   --color-border: var(--border);
   --color-border-strong: var(--border-strong);
-  --color-accent: var(--accent);
   --color-pass: var(--pass);
+  --color-pass-mark: var(--pass-mark);
   --color-pass-bg: var(--pass-bg);
   --color-fail: var(--fail);
   --color-fail-bg: var(--fail-bg);
-  --color-error: var(--error);
-  --color-error-bg: var(--error-bg);
-  --color-skip: var(--skip);
-  --color-skip-bg: var(--skip-bg);
-  --color-brand-1: var(--brand-1);
-  --color-brand-2: var(--brand-2);
-  --color-brand-3: var(--brand-3);
+  --color-warn: var(--warn);
+  --color-warn-bg: var(--warn-bg);
+  --color-warn-border: var(--warn-border);
   --font-sans: "Inter Variable", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
   --font-display: "Space Grotesk Variable", "Inter Variable", ui-sans-serif, system-ui, sans-serif;
   --font-mono: "JetBrains Mono Variable", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
@@ -106,58 +91,38 @@ table {
 }
 
 :focus-visible {
-  outline: 2px solid var(--accent);
+  outline: 2px solid var(--pass-mark);
   outline-offset: 2px;
-  border-radius: 6px;
+  border-radius: 4px;
 }
 
-/* ── Brand utilities ───────────────────────────────────────────────────────── */
-@utility text-gradient {
-  /* Solid fallback first, so the text stays readable if background-clip is unsupported. */
-  color: var(--brand-1);
-  background-image: linear-gradient(90deg, var(--brand-1), var(--brand-2) 50%, var(--brand-3));
-  -webkit-background-clip: text;
-  background-clip: text;
-  -webkit-text-fill-color: transparent;
-}
-
-@utility bg-gradient-brand {
-  background-image: linear-gradient(90deg, var(--brand-1), var(--brand-2) 50%, var(--brand-3));
-}
-
-@utility bg-grid {
-  background-image:
-    linear-gradient(var(--grid-line) 1px, transparent 1px),
-    linear-gradient(90deg, var(--grid-line) 1px, transparent 1px);
-  background-size: 48px 48px;
-}
-
-@utility bg-glow {
-  background-image:
-    radial-gradient(60% 50% at 20% 0%, var(--glow-1), transparent 70%),
-    radial-gradient(50% 45% at 85% 10%, var(--glow-2), transparent 70%);
-}
-
-/* A 1px gradient border around a card (used sparingly for emphasis). */
-@utility border-gradient {
-  border: 1px solid transparent;
-  background:
-    linear-gradient(var(--surface), var(--surface)) padding-box,
-    linear-gradient(120deg, var(--brand-1), var(--brand-2), var(--brand-3)) border-box;
-}
-
-@keyframes drift {
-  0%,
-  100% {
-    transform: translate3d(0, 0, 0) scale(1);
-  }
-  50% {
-    transform: translate3d(2%, -3%, 0) scale(1.06);
+/* A link in body text or a table: normal text colour, underlined, green underline on hover. */
+@utility link {
+  color: var(--fg);
+  text-decoration-line: underline;
+  text-decoration-color: var(--border-strong);
+  text-decoration-thickness: 1px;
+  text-underline-offset: 3px;
+  &:hover {
+    text-decoration-color: var(--pass-mark);
+    text-decoration-thickness: 2px;
   }
 }
 
-@utility animate-drift {
-  animation: drift 18s ease-in-out infinite;
+/* The single animation: the refused transaction's verdict appears once on load. */
+@keyframes verdict-in {
+  from {
+    opacity: 0;
+    transform: scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@utility animate-verdict {
+  animation: verdict-in 0.5s ease-out 0.35s both;
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -165,6 +130,7 @@ table {
   *::before,
   *::after {
     animation-duration: 0.001ms !important;
+    animation-delay: 0s !important;
     animation-iteration-count: 1 !important;
     transition-duration: 0.001ms !important;
     scroll-behavior: auto !important;

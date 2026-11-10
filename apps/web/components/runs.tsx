@@ -4,11 +4,31 @@ import type { DataSource, InvalidReport } from "@/lib/data";
 import { formatDuration, formatTime, shortId } from "@/lib/data";
 import { Code, EmptyState, Notice, StatusBadge } from "./ui";
 
+/** Pass / fail / error / skip counts: a mark and a number each, coloured only when it matters. */
 function Counts({ r }: { r: RunReport }) {
+  const { passed, failed, errored, skipped } = r.summary;
   return (
-    <span className="font-mono tabular-nums">
-      {r.summary.passed} / <span className={r.summary.failed ? "text-fail" : ""}>{r.summary.failed}</span> /{" "}
-      <span className={r.summary.errored ? "text-error" : ""}>{r.summary.errored}</span> / {r.summary.skipped}
+    <span className="inline-flex flex-wrap items-center justify-end gap-x-3 font-mono tabular-nums">
+      <span className="text-pass">
+        <span aria-hidden="true">✓ </span>
+        {passed}
+        <span className="sr-only"> passed,</span>
+      </span>
+      <span className={failed ? "font-semibold text-fail" : "text-muted"}>
+        <span aria-hidden="true">✕ </span>
+        {failed}
+        <span className="sr-only"> failed,</span>
+      </span>
+      <span className={errored ? "font-semibold text-warn" : "text-muted"}>
+        <span aria-hidden="true">! </span>
+        {errored}
+        <span className="sr-only"> errors,</span>
+      </span>
+      <span className="text-muted">
+        <span aria-hidden="true">– </span>
+        {skipped}
+        <span className="sr-only"> skipped</span>
+      </span>
     </span>
   );
 }
@@ -22,11 +42,11 @@ export function RunsTable({ runs, caption }: { runs: readonly RunReport[]; capti
           <li key={r.runId}>
             <Link
               href={`/runs/${r.runId}`}
-              className="block h-full rounded-2xl border border-border bg-surface p-4 transition-colors hover:border-border-strong hover:bg-surface-2"
+              className="block h-full rounded-md border border-border bg-surface p-4 transition-colors hover:border-border-strong hover:bg-surface-2"
             >
               <div className="flex items-start justify-between gap-3">
                 <div className="min-w-0">
-                  <div className="font-mono text-sm text-accent">{shortId(r.runId)}</div>
+                  <div className="font-mono text-sm font-semibold underline decoration-border-strong underline-offset-4">{shortId(r.runId)}</div>
                   {r.project.name ? <div className="text-xs text-muted">{r.project.name}</div> : null}
                 </div>
                 <StatusBadge status={r.status} runLevel />
@@ -35,7 +55,7 @@ export function RunsTable({ runs, caption }: { runs: readonly RunReport[]; capti
                 <dt className="text-muted">Started</dt>
                 <dd className="text-right">{formatTime(r.startedAt)}</dd>
                 <dt className="text-muted">Pass / Fail / Error / Skip</dt>
-                <dd className="text-right">
+                <dd className="flex justify-end">
                   <Counts r={r} />
                 </dd>
                 <dt className="text-muted">Mode · duration</dt>
@@ -48,10 +68,10 @@ export function RunsTable({ runs, caption }: { runs: readonly RunReport[]; capti
         ))}
       </ul>
       {/* Laptops and up: table. */}
-      <div className="hidden overflow-x-auto rounded-2xl border border-border bg-surface lg:block">
+      <div className="hidden overflow-x-auto rounded-md border border-border bg-surface lg:block">
         <table className="w-full text-left text-sm">
           <caption className="sr-only">{caption}</caption>
-          <thead className="border-b border-border text-xs uppercase tracking-wide text-muted">
+          <thead className="border-b border-border text-xs text-muted">
             <tr>
               <th scope="col" className="px-4 py-2 font-medium">Run</th>
               <th scope="col" className="px-4 py-2 font-medium">Started</th>
@@ -65,7 +85,7 @@ export function RunsTable({ runs, caption }: { runs: readonly RunReport[]; capti
             {runs.map((r) => (
               <tr key={r.runId} className="border-b border-border last:border-0 hover:bg-surface-2">
                 <td className="px-4 py-2">
-                  <Link href={`/runs/${r.runId}`} className="inline-flex min-h-6 items-center font-mono text-accent hover:underline">
+                  <Link href={`/runs/${r.runId}`} className="inline-flex min-h-6 items-center font-mono link">
                     {shortId(r.runId)}
                   </Link>
                   {r.project.name ? <div className="text-xs text-muted">{r.project.name}</div> : null}
@@ -95,7 +115,7 @@ export function NoRuns({ source }: { source: DataSource }) {
         The dashboard shows reports written by the Drainproof CLI. It looked in <Code>{source.runsDir}</Code>.
       </p>
       <p className="mt-3">Run the suite in your project, then point the dashboard at its reports directory:</p>
-      <pre className="mt-3 rounded bg-surface-2 p-3 text-left font-mono text-xs whitespace-pre-wrap text-fg">
+      <pre className="mt-3 rounded-sm bg-surface-2 p-3 text-left font-mono text-xs whitespace-pre-wrap text-fg">
         {`drainproof test\nDRAINPROOF_RUNS_DIR=<project>/.drainproof/runs pnpm --filter @drainproof/web dev`}
       </pre>
     </EmptyState>

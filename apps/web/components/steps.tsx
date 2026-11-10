@@ -13,13 +13,13 @@ export function StepList({ scenario }: { scenario: ScenarioResult }) {
   return (
     <ol className="space-y-2">
       {scenario.steps.map((st) => (
-        <li key={st.index} className="rounded border border-border p-3">
+        <li key={st.index} className="rounded-md border border-border bg-surface p-3">
           <div className="flex flex-wrap items-center gap-2 text-sm">
             <span className="font-mono text-muted">#{st.index + 1}</span>
             <span className="font-mono">{st.kind}</span>
             <span
               className={`shrink-0 rounded px-1.5 text-xs font-semibold whitespace-nowrap [overflow-wrap:normal] ${
-                st.status === "passed" ? "bg-pass-bg text-pass" : st.status === "failed" ? "bg-fail-bg text-fail" : "bg-error-bg text-error"
+                st.status === "passed" ? "bg-pass-bg text-pass" : st.status === "failed" ? "bg-fail-bg text-fail" : "bg-warn-bg text-warn"
               }`}
             >
               {st.status}
@@ -30,14 +30,14 @@ export function StepList({ scenario }: { scenario: ScenarioResult }) {
             <div className="mt-2 grid gap-2 md:grid-cols-2">
               {st.expected !== undefined ? (
                 <div>
-                  <div className="text-xs uppercase tracking-wide text-muted">Expected</div>
-                  <pre className="mt-1 rounded bg-surface-2 p-2 font-mono text-xs whitespace-pre-wrap">{json(st.expected)}</pre>
+                  <div className="text-xs text-muted">Expected</div>
+                  <pre className="mt-1 rounded-sm bg-surface-2 p-2 font-mono text-xs whitespace-pre-wrap">{json(st.expected)}</pre>
                 </div>
               ) : null}
               {st.observed !== undefined ? (
                 <div>
-                  <div className="text-xs uppercase tracking-wide text-muted">Observed</div>
-                  <pre className="mt-1 rounded bg-surface-2 p-2 font-mono text-xs whitespace-pre-wrap">{json(st.observed)}</pre>
+                  <div className="text-xs text-muted">Observed</div>
+                  <pre className={`mt-1 rounded-sm bg-surface-2 p-2 font-mono text-xs whitespace-pre-wrap ${st.status === "failed" ? "text-fail" : ""}`}>{json(st.observed)}</pre>
                 </div>
               ) : null}
             </div>

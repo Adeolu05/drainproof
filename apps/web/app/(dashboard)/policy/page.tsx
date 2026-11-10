@@ -13,7 +13,7 @@ function PolicyDocument({ document }: { document: unknown }) {
       tabIndex={0}
       role="region"
       aria-label="Policy document (YAML)"
-      className="overflow-x-auto rounded bg-surface-2 p-3 font-mono text-xs leading-relaxed sm:p-4"
+      className="overflow-x-auto rounded-sm bg-surface-2 p-3 font-mono text-xs leading-relaxed sm:p-4"
     >
       {stringify(document)}
     </pre>
@@ -35,7 +35,7 @@ export default async function PolicyPage() {
             <strong>Valid.</strong> <Code>{status.policyFile}</Code> from <Code>{status.file}</Code> passed schema validation just now.
             Hash <span className="font-mono text-xs">{status.hash}</span>
             {latest && latest.policy.hash !== status.hash ? (
-              <span className="mt-1 block text-skip">
+              <span className="mt-1 block text-warn">
                 This differs from the policy used in the latest run ({latest.policy.hash.slice(0, 19)}…). Re-run{" "}
                 <Code>drainproof test</Code> to test the current version.
               </span>

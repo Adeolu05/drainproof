@@ -23,7 +23,7 @@ export default async function ScenarioPage({ params }: { params: Promise<{ id: s
   return (
     <>
       <p className="mb-2 text-sm">
-        <Link href="/scenarios" className="inline-flex min-h-11 items-center text-accent hover:underline sm:min-h-6">
+        <Link href="/scenarios" className="inline-flex min-h-11 items-center link sm:min-h-6">
           ← Scenario library
         </Link>
       </p>
@@ -50,12 +50,12 @@ export default async function ScenarioPage({ params }: { params: Promise<{ id: s
       </div>
       <h2 className="mb-3 mt-8 text-sm font-semibold text-muted">Execution history</h2>
       {/* Phones: one row per run; the whole row is the link. */}
-      <ul aria-label={`Execution history for ${latest.id}`} className="divide-y divide-border rounded-2xl border border-border bg-surface sm:hidden">
+      <ul aria-label={`Execution history for ${latest.id}`} className="divide-y divide-border rounded-md border border-border bg-surface sm:hidden">
         {history.map((h) => (
           <li key={h.runId}>
             <Link href={`/runs/${h.runId}`} className="flex min-h-11 items-center justify-between gap-3 px-4 py-2 hover:bg-surface-2">
               <span className="min-w-0">
-                <span className="block font-mono text-sm text-accent">{h.runId.slice(0, 12)}</span>
+                <span className="block font-mono text-sm font-semibold underline decoration-border-strong underline-offset-4">{h.runId.slice(0, 12)}</span>
                 <span className="block text-xs text-muted">{formatTime(h.startedAt)}</span>
               </span>
               <StatusBadge status={h.status} />
@@ -63,10 +63,10 @@ export default async function ScenarioPage({ params }: { params: Promise<{ id: s
           </li>
         ))}
       </ul>
-      <div className="hidden overflow-x-auto rounded-2xl border border-border bg-surface sm:block">
+      <div className="hidden overflow-x-auto rounded-md border border-border bg-surface sm:block">
         <table className="w-full text-left text-sm">
           <caption className="sr-only">Execution history for {latest.id}</caption>
-          <thead className="border-b border-border text-xs uppercase tracking-wide text-muted">
+          <thead className="border-b border-border text-xs text-muted">
             <tr>
               <th scope="col" className="px-3 py-2 font-medium sm:px-4">Run</th>
               <th scope="col" className="px-3 py-2 font-medium sm:px-4">Started</th>
@@ -77,7 +77,7 @@ export default async function ScenarioPage({ params }: { params: Promise<{ id: s
             {history.map((h) => (
               <tr key={h.runId} className="border-b border-border last:border-0">
                 <td className="px-3 py-2 sm:px-4">
-                  <Link href={`/runs/${h.runId}`} className="inline-flex min-h-6 items-center font-mono text-accent hover:underline">
+                  <Link href={`/runs/${h.runId}`} className="inline-flex min-h-6 items-center font-mono link">
                     {h.runId.slice(0, 12)}
                   </Link>
                 </td>

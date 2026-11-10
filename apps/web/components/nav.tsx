@@ -27,12 +27,12 @@ export function MainNav() {
               <Link
                 href={n.href}
                 aria-current={active ? "page" : undefined}
-                className={`relative flex min-h-11 items-center justify-center rounded-lg px-2 text-center whitespace-nowrap transition-colors sm:min-h-9 sm:px-3 ${
+                className={`relative flex min-h-11 items-center justify-center rounded-md px-2 text-center whitespace-nowrap transition-colors sm:min-h-9 sm:px-3 ${
                   active ? "bg-surface-2 font-medium text-fg" : "text-muted hover:bg-surface-2/70 hover:text-fg"
                 }`}
               >
                 {n.label}
-                {active ? <span aria-hidden="true" className="absolute inset-x-3 -bottom-px h-0.5 rounded-full bg-gradient-brand" /> : null}
+                {active ? <span aria-hidden="true" className="absolute inset-x-3 -bottom-px h-0.5 bg-pass-mark" /> : null}
               </Link>
             </li>
           );

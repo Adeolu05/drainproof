@@ -15,7 +15,7 @@ function FilterLink({ href, active, children }: { href: string; active: boolean;
     <Link
       href={href}
       aria-current={active ? "page" : undefined}
-      className={`inline-flex min-h-11 items-center rounded px-3 text-sm sm:min-h-8 sm:px-2.5 ${active ? "bg-fg text-bg" : "text-muted hover:bg-surface-2 hover:text-fg"}`}
+      className={`inline-flex min-h-11 items-center rounded-sm px-3 text-sm sm:min-h-8 sm:px-2.5 ${active ? "bg-fg text-bg" : "text-muted hover:bg-surface-2 hover:text-fg"}`}
     >
       {children}
     </Link>
@@ -46,7 +46,7 @@ export default async function RunsPage({ searchParams }: { searchParams: Promise
         <>
           <div className="mb-4 flex flex-wrap items-center gap-x-6 gap-y-2">
             <div role="group" aria-label="Filter by result" className="flex flex-wrap items-center gap-1">
-              <span className="mr-1 w-full text-xs uppercase tracking-wide text-muted sm:w-auto">Result</span>
+              <span className="mr-1 w-full text-xs text-muted sm:w-auto">Result</span>
               <FilterLink href={href({ mode })} active={!result}>All</FilterLink>
               {RESULTS.map((r) => (
                 <FilterLink key={r} href={href({ result: r, mode })} active={result === r}>
@@ -55,7 +55,7 @@ export default async function RunsPage({ searchParams }: { searchParams: Promise
               ))}
             </div>
             <div role="group" aria-label="Filter by execution mode" className="flex flex-wrap items-center gap-1">
-              <span className="mr-1 w-full text-xs uppercase tracking-wide text-muted sm:w-auto">Mode</span>
+              <span className="mr-1 w-full text-xs text-muted sm:w-auto">Mode</span>
               <FilterLink href={href({ result })} active={!mode}>All</FilterLink>
               {MODES.map((m) => (
                 <FilterLink key={m} href={href({ result, mode: m })} active={mode === m}>

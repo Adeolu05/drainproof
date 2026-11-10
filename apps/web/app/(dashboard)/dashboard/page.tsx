@@ -72,7 +72,7 @@ export default async function OverviewPage() {
                 <li key={f.id} className="flex items-start gap-3 py-2">
                   <SeverityBadge severity={f.severity} />
                   <div className="min-w-0">
-                    <Link href={`/runs/${f.runId}/findings/${f.scenarioId}`} className="inline-flex min-h-6 items-center text-sm text-accent hover:underline">
+                    <Link href={`/runs/${f.runId}/findings/${f.scenarioId}`} className="inline-flex min-h-6 items-center text-sm link">
                       {f.title}
                     </Link>
                     <div className="text-xs text-muted">
@@ -88,7 +88,7 @@ export default async function OverviewPage() {
           <dl className="grid grid-cols-[auto_1fr] gap-x-4 gap-y-1.5 text-sm">
             <dt className="text-muted">Run</dt>
             <dd>
-              <Link href={`/runs/${latest.runId}`} className="inline-flex min-h-6 items-center font-mono text-accent hover:underline">
+              <Link href={`/runs/${latest.runId}`} className="inline-flex min-h-6 items-center font-mono link">
                 {shortId(latest.runId)}
               </Link>
             </dd>
@@ -112,7 +112,7 @@ export default async function OverviewPage() {
       <RunsTable runs={runs.slice(0, 5)} caption="Five most recent test runs" />
       {runs.length > 5 ? (
         <p className="mt-2 text-sm">
-          <Link href="/runs" className="inline-flex min-h-11 items-center text-accent hover:underline sm:min-h-6">
+          <Link href="/runs" className="inline-flex min-h-11 items-center link sm:min-h-6">
             All {runs.length} runs →
           </Link>
         </p>
