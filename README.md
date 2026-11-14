@@ -6,8 +6,28 @@ Drainproof is the test suite for an AI agent's money rules. On every pull reques
 
 In plain terms: you write down what your agent may pay (to whom, how much, how often, and when a person must approve). Drainproof attacks those rules the way a prompt-injected or buggy agent would: a payment to an attacker, an amount one unit over the limit, a replayed approval, parallel spending, a look-alike account name. It checks that every attack is still stopped. Add it to a repository with [one GitHub Action step](#add-it-to-your-repository-github-action); when a pull request loosens the rules, the check fails and shows the finding. **See it fail a real pull request:** [demo PR #2](https://github.com/Adeolu05/drainproof/pull/2) adds `attacker-wallet` to an allowlist; the Drainproof check fails with exit code 1 while every other CI job passes (never merged). **Live dashboard:** [drainproof-lemon.vercel.app](https://drainproof-lemon.vercel.app/), deployed from `main` in demo mode, so it shows the bundled demo reports (fixtures produced by running the real CLI on the example policies), not results from your project.
 
+**Watch the 2-minute film:** [Drainproof on X](https://x.com/AlphVibes/status/2121585272802705650), built at NEAR HACKATHON.
+
 - **Off-chain engine:** all 40 scenarios run against your policy, offline, in under a second.
 - **On-chain vault:** the [Drainproof Vault](#what-the-agents-key-can-and-cannot-do) is a NEAR contract that holds the money; the agent holds only a function-call key. The 16 scenarios a contract can express run against it on a local NEAR node. The other 24 (such as malformed JSON, several assets, or moving the clock) are skipped, each with its reason.
+
+### Check the live vault in 30 seconds
+
+Optional, needs only `curl` and internet. The vault on NEAR testnet has no access keys left, so nobody can redeploy or change its code:
+
+```bash
+curl -s https://rpc.testnet.near.org -H 'Content-Type: application/json' -d '{"jsonrpc":"2.0","id":"dp","method":"query","params":{"request_type":"view_access_key_list","finality":"final","account_id":"vault.dpeluola-owner.testnet"}}' | grep -o '"keys":\[[^]]*\]'
+```
+
+Expected: `"keys":[]`
+
+Its deployed code is this repository's contract build:
+
+```bash
+curl -s https://rpc.testnet.near.org -H 'Content-Type: application/json' -d '{"jsonrpc":"2.0","id":"dp","method":"query","params":{"request_type":"view_account","finality":"final","account_id":"vault.dpeluola-owner.testnet"}}' | grep -o '"code_hash":"[^"]*"'
+```
+
+Expected: `"code_hash":"Dgobcbf8FBcEgytMgYktMycezt2CYGqKB2SVqFYNdKMX"`
 
 ## For judges: verify in 5 minutes
 
